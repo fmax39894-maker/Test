@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<meta name="theme-color" content="#0b1220">
+
+<title>Learning AI - API Tester</title>
+
+<style>
+:root{
+    --bg:#eef3fb;
+    --panel:#ffffff;
+    --text:#172033;
+    --muted:#718096;
+    --border:#dce3ee;
+    --header:#0b1220;
+    --user:#172033;
+    --accent:#667eea;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    width:100%;
+    height:100%;
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    color:var(--text);
+}
+
+body{
+    overflow:hidden;
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(137,108,255,.22),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 80%,
+            rgba(64,210,255,.20),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #edf3ff,
+            #faf7ff,
+            #eafcff
+        );
+}
+
+/* =========================
+   LIGHTNING
+========================= */
+
+.lightning{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:1;
+}
+
+.bolt{
+    position:absolute;
+    width:3px;
+    height:145px;
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent,
+            #5ee7ff,
+            #a78bfa,
+            transparent
+        );
+
+    filter:
+        drop-shadow(0 0 6px #5ee7ff)
+        drop-shadow(0 0 14px #a78bfa);
+
+    opacity:0;
+    transform:rotate(25deg);
+
+    animation:lightning 4s infinite;
+}
+
+.bolt:nth-child(1){
+    right:3%;
+    top:12%;
+}
+
+.bolt:nth-child(2){
+    left:2%;
+    bottom:20%;
+    transform:rotate(-27deg);
+    animation-delay:1.2s;
+}
+
+.bolt:nth-child(3){
+    right:1%;
+    bottom:32%;
+    height:90px;
+    transform:rotate(-18deg);
+    animation-delay:2.4s;
+}
+
+.bolt:nth-child(4){
+    left:1%;
+    top:35%;
+    height:80px;
+    transform:rotate(18deg);
+    animation-delay:3.1s;
+}
+
+@keyframes lightning{
+
+    0%,
+    72%,
+    100%{
+        opacity:0;
+    }
+
+    76%{
+        opacity:1;
+    }
+
+    79%{
+        opacity:.15;
+    }
+
+    83%{
+        opacity:.9;
+    }
+
+    87%{
+        opacity:.25;
+    }
+
+    90%{
+        opacity:0;
+    }
+}
+
+/* =========================
+   APP
+========================= */
+
+.app{
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    z-index:2;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    height:82px;
+    flex:none;
+
+    background:var(--header);
+    color:white;
+
+    display:flex;
+    align-items:center;
+
+    padding:12px 18px;
+
+    gap:12px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.18);
+}
+
+.avatar{
+    width:54px;
+    height:54px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    display:grid;
+    place-items:center;
+
+    font-size:30px;
+
+    box-shadow:
+        0 0 0 2px rgba(255,255,255,.08),
+        0 0 25px rgba(87,215,255,.25);
+}
+
+.brand-title{
+    font-size:21px;
+    font-weight:800;
+}
+
+.brand-subtitle{
+    margin-top:3px;
+    font-size:13px;
+    color:#aeb9ca;
+}
+
+.online{
+    margin-left:auto;
+
+    display:flex;
+    align-items:center;
+
+    gap:7px;
+
+    color:#dbe4ef;
+
+    font-size:14px;
+}
+
+.online-dot{
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    box-shadow:
+        0 0 12px #22c55e;
+}
+
+/* =========================
+   CHAT AREA
+========================= */
+
+.messages{
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:
+        28px
+        16px
+        125px;
+
+    scroll-behavior:smooth;
+}
+
+/* Welcome */
+
+.welcome{
+    max-width:680px;
+
+    margin:
+        35px auto;
+
+    padding:35px 25px;
+
+    text-align:center;
+
+    background:rgba(255,255,255,.86);
+
+    backdrop-filter:blur(16px);
+
+    border:
+        1px solid rgba(255,255,255,.9);
+
+    border-radius:28px;
+
+    box-shadow:
+        0 20px 70px rgba(23,32,51,.10);
+}
+
+.welcome-icon{
+    font-size:62px;
+}
+
+.welcome h1{
+    margin:12px 0 7px;
+
+    font-size:34px;
+}
+
+.welcome p{
+    margin:0;
+
+    color:var(--muted);
+
+    line-height:1.6;
+}
+
+.api-status{
+    margin-top:18px;
+
+    display:inline-block;
+
+    padding:8px 13px;
+
+    border-radius:20px;
+
+    background:#eef3ff;
+
+    color:#5168c8;
+
+    font-size:13px;
+
+    font-weight:700;
+}
+
+/* Messages */
+
+.message-row{
+    max-width:850px;
+
+    margin:
+        0 auto
+        18px;
+
+    display:flex;
+}
+
+.message-row.user{
+    justify-content:flex-end;
+}
+
+.message{
+    max-width:min(80%,700px);
+
+    padding:
+        15px
+        19px;
+
+    border-radius:20px;
+
+    font-size:17px;
+
+    line-height:1.55;
+
+    white-space:pre-wrap;
+
+    overflow-wrap:anywhere;
+
+    box-shadow:
+        0 5px 20px rgba(23,32,51,.07);
+}
+
+.message.user{
+    background:var(--user);
+
+    color:white;
+
+    border-bottom-right-radius:7px;
+}
+
+.message.ai{
+    background:var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    border-bottom-left-radius:7px;
+}
+
+.message.ai strong{
+    font-weight:800;
+}
+
+/* =========================
+   TYPING
+========================= */
+
+.typing{
+    position:fixed;
+
+    left:18px;
+    bottom:105px;
+
+    z-index:20;
+
+    display:flex;
+
+    gap:5px;
+
+    padding:
+        11px
+        14px;
+
+    background:white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:16px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.10);
+}
+
+.typing.hidden{
+    display:none;
+}
+
+.typing span{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:#7d8797;
+
+    animation:typing 1s infinite;
+}
+
+.typing span:nth-child(2){
+    animation-delay:.15s;
+}
+
+.typing span:nth-child(3){
+    animation-delay:.30s;
+}
+
+@keyframes typing{
+
+    50%{
+        transform:translateY(-4px);
+        opacity:.4;
+    }
+}
+
+/* =========================
+   COMPOSER
+========================= */
+
+.composer{
+    position:fixed;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:94px;
+
+    z-index:30;
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    padding:
+        15px
+        16px;
+
+    background:rgba(255,255,255,.88);
+
+    backdrop-filter:blur(16px);
+
+    border-top:
+        1px solid var(--border);
+}
+
+.input-box{
+    flex:1;
+    min-width:0;
+
+    display:flex;
+    align-items:center;
+
+    background:white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:29px;
+
+    padding-left:18px;
+
+    box-shadow:
+        0 3px 15px rgba(23,32,51,.05);
+}
+
+#question{
+    width:100%;
+
+    min-width:0;
+
+    height:54px;
+
+    border:0;
+    outline:0;
+
+    resize:none;
+
+    padding:
+        15px
+        10px
+        15px
+        0;
+
+    background:transparent;
+
+    color:var(--text);
+
+    font-family:inherit;
+
+    font-size:17px;
+
+    line-height:1.45;
+}
+
+#question::placeholder{
+    color:#8b96a8;
+}
+
+.send{
+    width:53px;
+    height:53px;
+
+    flex:none;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#172033;
+
+    color:white;
+
+    font-size:23px;
+
+    display:grid;
+    place-items:center;
+
+    cursor:pointer;
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+.send:hover{
+    transform:scale(1.05);
+
+    box-shadow:
+        0 0 20px rgba(102,126,234,.45);
+}
+
+.send:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+    transform:none;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+    .header{
+        height:76px;
+        padding:10px 13px;
+    }
+
+    .avatar{
+        width:48px;
+        height:48px;
+        font-size:27px;
+    }
+
+    .brand-title{
+        font-size:18px;
+    }
+
+    .brand-subtitle{
+        font-size:12px;
+    }
+
+    .online{
+        font-size:12px;
+    }
+
+    .messages{
+        padding:
+            18px
+            11px
+            115px;
+    }
+
+    .message{
+        max-width:90%;
+        font-size:16px;
+    }
+
+    .welcome{
+        margin:25px auto;
+        padding:30px 18px;
+    }
+
+    .welcome h1{
+        font-size:28px;
+    }
+
+    .composer{
+        height:84px;
+        padding:12px;
+    }
+
+    #question{
+        height:50px;
+        font-size:16px;
+    }
+
+    .send{
+        width:50px;
+        height:50px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     LIGHTNING VFX
+========================= -->
+
+<div class="lightning" aria-hidden="true">
+
+    <div class="bolt"></div>
+    <div class="bolt"></div>
+    <div class="bolt"></div>
+    <div class="bolt"></div>
+
+</div>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<div class="app">
+
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="avatar">
+            🧠
+        </div>
+
+        <div>
+
+            <div class="brand-title">
+                Learning AI
+            </div>
+
+            <div class="brand-subtitle">
+                API Testing Chat
+            </div>
+
+        </div>
+
+        <div class="online">
+
+            <span class="online-dot"></span>
+
+            API Online
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         CHAT
+    ========================= -->
+
+    <main
+        id="messages"
+        class="messages"
+    >
+
+        <div
+            id="welcome"
+            class="welcome"
+        >
+
+            <div class="welcome-icon">
+                🧠
+            </div>
+
+            <h1>
+                Talk with Learning AI
+            </h1>
+
+            <p>
+                This chat uses your read-only
+                <strong>/api/ask</strong>
+                endpoint.
+            </p>
+
+            <div class="api-status">
+                POST /api/ask
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         TYPING
+    ========================= -->
+
+    <div
+        id="typing"
+        class="typing hidden"
+    >
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+    </div>
+
+
+    <!-- =========================
+         COMPOSER
+    ========================= -->
+
+    <form
+        id="chatForm"
+        class="composer"
+    >
+
+        <div class="input-box">
+
+            <textarea
+                id="question"
+                rows="1"
+                placeholder="Ask your AI..."
+                autocomplete="off"
+                spellcheck="true"
+            ></textarea>
+
+        </div>
+
+        <button
+            id="sendButton"
+            class="send"
+            type="submit"
+            aria-label="Send"
+        >
+            ➤
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   CONFIGURATION
+===================================================== */
+
+/*
+   Because this HTML is intended to be hosted on the
+   SAME Vercel project as your API, this is:
+
+       /api/ask
+
+   If you host this HTML somewhere else, change it to:
+
+       https://heart-ai-omega.vercel.app/api/ask
+*/
+
+const API_URL = "/api/ask";
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const messages =
+    document.getElementById("messages");
+
+const welcome =
+    document.getElementById("welcome");
+
+const form =
+    document.getElementById("chatForm");
+
+const questionInput =
+    document.getElementById("question");
+
+const sendButton =
+    document.getElementById("sendButton");
+
+const typing =
+    document.getElementById("typing");
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(text){
+
+    return String(text)
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =====================================================
+   FORMAT AI ANSWER
+===================================================== */
+
+function formatAnswer(text){
+
+    let safe =
+        escapeHTML(text);
+
+    /*
+       Supports:
+
+       **bold text**
+    */
+
+    safe =
+        safe.replace(
+            /\*\*(.+?)\*\*/gs,
+            "<strong>$1</strong>"
+        );
+
+    return safe;
+}
+
+
+/* =====================================================
+   ADD MESSAGE
+===================================================== */
+
+function addMessage(
+    text,
+    type
+){
+
+    if(welcome){
+
+        welcome.remove();
+
+    }
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "message-row " + type;
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "message " +
+        (
+            type === "user"
+            ? "user"
+            : "ai"
+        );
+
+
+    if(type === "ai"){
+
+        bubble.innerHTML =
+            formatAnswer(text);
+
+    }else{
+
+        bubble.textContent =
+            text;
+
+    }
+
+
+    row.appendChild(bubble);
+
+    messages.appendChild(row);
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+/* =====================================================
+   TYPING
+===================================================== */
+
+function setTyping(show){
+
+    typing.classList.toggle(
+        "hidden",
+        !show
+    );
+}
+
+
+/* =====================================================
+   ASK API
+===================================================== */
+
+async function askAI(question){
+
+    const response =
+        await fetch(
+            API_URL,
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+                    question:question
+                })
+            }
+        );
+
+
+    /*
+       Read the response as text first.
+       This lets us display useful errors when
+       Vercel returns HTML instead of JSON.
+    */
+
+    const responseText =
+        await response.text();
+
+
+    let data;
+
+
+    try{
+
+        data =
+            JSON.parse(responseText);
+
+    }catch{
+
+        throw new Error(
+            "Server returned HTTP " +
+            response.status +
+            ". Response: " +
+            responseText.slice(0,250)
+        );
+
+    }
+
+
+    if(!response.ok){
+
+        throw new Error(
+            data.error ||
+            "API request failed. HTTP " +
+            response.status
+        );
+
+    }
+
+
+    return (
+        data.answer ||
+        "I don't know about it"
+    );
+}
+
+
+/* =====================================================
+   SEND MESSAGE
+===================================================== */
+
+form.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const question =
+            questionInput.value.trim();
+
+
+        if(
+            !question ||
+            sendButton.disabled
+        ){
+
+            return;
+
+        }
+
+
+        /* Show question */
+
+        addMessage(
+            question,
+            "user"
+        );
+
+
+        /* Clear input */
+
+        questionInput.value = "";
+
+        questionInput.style.height =
+            "54px";
+
+
+        /* Disable send */
+
+        sendButton.disabled =
+            true;
+
+
+        setTyping(true);
+
+
+        try{
+
+            const answer =
+                await askAI(question);
+
+
+            setTyping(false);
+
+
+            addMessage(
+                answer,
+                "ai"
+            );
+
+
+        }catch(error){
+
+            setTyping(false);
+
+
+            /*
+               Show the REAL error.
+               This is useful for diagnosing
+               Vercel/API problems.
+            */
+
+            addMessage(
+                "⚠️ " +
+                (
+                    error.message ||
+                    "Unable to connect to the API."
+                ),
+                "ai"
+            );
+
+
+            console.error(
+                "Learning AI API error:",
+                error
+            );
+
+        }finally{
+
+            sendButton.disabled =
+                false;
+
+            questionInput.focus();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ENTER / CTRL+ENTER
+===================================================== */
+
+questionInput.addEventListener(
+    "keydown",
+    function(event){
+
+        /*
+           Ctrl + Enter
+           or
+           Android/desktop form submission
+        */
+
+        if(
+            event.key === "Enter" &&
+            (event.ctrlKey || event.metaKey)
+        ){
+
+            event.preventDefault();
+
+            form.requestSubmit();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUTO RESIZE
+===================================================== */
+
+questionInput.addEventListener(
+    "input",
+    function(){
+
+        this.style.height =
+            "auto";
+
+        this.style.height =
+            Math.min(
+                this.scrollHeight,
+                120
+            ) + "px";
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL FOCUS
+===================================================== */
+
+window.addEventListener(
+    "load",
+    function(){
+
+        questionInput.focus();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
