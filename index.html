@@ -2,1175 +2,977 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-<meta name="theme-color" content="#0b1220">
-
-<title>Learning AI - API Tester</title>
+<title>Learning AI — Ask</title>
 
 <style>
-:root{
-    --bg:#eef3fb;
-    --panel:#ffffff;
-    --text:#172033;
-    --muted:#718096;
-    --border:#dce3ee;
-    --header:#0b1220;
-    --user:#172033;
-    --accent:#667eea;
-}
-
 *{
-    box-sizing:border-box;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
-html,
-body{
-    margin:0;
-    width:100%;
-    height:100%;
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    color:var(--text);
+:root{
+  --bg:#07111f;
+  --panel:#0d1a2c;
+  --panel2:#111f34;
+  --text:#f5f8ff;
+  --muted:#91a0b6;
+  --line:#263852;
+  --accent:#55d6ff;
+  --accent2:#8b7cff;
 }
 
 body{
-    overflow:hidden;
-    background:
-        radial-gradient(
-            circle at 10% 20%,
-            rgba(137,108,255,.22),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 90% 80%,
-            rgba(64,210,255,.20),
-            transparent 30%
-        ),
-        linear-gradient(
-            135deg,
-            #edf3ff,
-            #faf7ff,
-            #eafcff
-        );
+  min-height:100vh;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,
+  "Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 10%,#16456b55,transparent 30%),
+    radial-gradient(circle at 90% 90%,#4a247355,transparent 30%),
+    var(--bg);
+  overflow:hidden;
 }
 
-/* =========================
-   LIGHTNING
-========================= */
+/* BACKGROUND */
+
+.bg{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.glow{
+  position:absolute;
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  filter:blur(70px);
+  opacity:.18;
+  animation:float 8s ease-in-out infinite alternate;
+}
+
+.glow.one{
+  background:#27cfff;
+  left:-80px;
+  top:-80px;
+}
+
+.glow.two{
+  background:#8866ff;
+  right:-80px;
+  bottom:-80px;
+  animation-delay:2s;
+}
+
+@keyframes float{
+  from{transform:translate(0,0)}
+  to{transform:translate(50px,30px)}
+}
+
+/* LIGHTNING */
 
 .lightning{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    overflow:hidden;
-    z-index:1;
+  position:fixed;
+  pointer-events:none;
+  z-index:5;
+  opacity:.8;
 }
 
 .bolt{
-    position:absolute;
-    width:3px;
-    height:145px;
-
-    background:
-        linear-gradient(
-            180deg,
-            transparent,
-            #5ee7ff,
-            #a78bfa,
-            transparent
-        );
-
-    filter:
-        drop-shadow(0 0 6px #5ee7ff)
-        drop-shadow(0 0 14px #a78bfa);
-
-    opacity:0;
-    transform:rotate(25deg);
-
-    animation:lightning 4s infinite;
+  position:absolute;
+  width:2px;
+  height:120px;
+  background:linear-gradient(
+    transparent,
+    #61e7ff,
+    #a78bfa,
+    transparent
+  );
+  filter:drop-shadow(0 0 9px #61e7ff);
+  transform:rotate(25deg);
+  animation:flash 4s infinite;
 }
 
 .bolt:nth-child(1){
-    right:3%;
-    top:12%;
+  right:25px;
+  top:110px;
 }
 
 .bolt:nth-child(2){
-    left:2%;
-    bottom:20%;
-    transform:rotate(-27deg);
-    animation-delay:1.2s;
+  left:18px;
+  bottom:130px;
+  height:90px;
+  transform:rotate(-25deg);
+  animation-delay:1.5s;
 }
 
 .bolt:nth-child(3){
-    right:1%;
-    bottom:32%;
-    height:90px;
-    transform:rotate(-18deg);
-    animation-delay:2.4s;
+  right:10px;
+  bottom:180px;
+  height:65px;
+  transform:rotate(-18deg);
+  animation-delay:2.5s;
 }
 
-.bolt:nth-child(4){
-    left:1%;
-    top:35%;
-    height:80px;
-    transform:rotate(18deg);
-    animation-delay:3.1s;
+@keyframes flash{
+  0%,75%,100%{
+    opacity:0;
+  }
+  78%{
+    opacity:1;
+  }
+  82%{
+    opacity:.15;
+  }
+  86%{
+    opacity:.9;
+  }
+  90%{
+    opacity:0;
+  }
 }
 
-@keyframes lightning{
-
-    0%,
-    72%,
-    100%{
-        opacity:0;
-    }
-
-    76%{
-        opacity:1;
-    }
-
-    79%{
-        opacity:.15;
-    }
-
-    83%{
-        opacity:.9;
-    }
-
-    87%{
-        opacity:.25;
-    }
-
-    90%{
-        opacity:0;
-    }
-}
-
-/* =========================
-   APP
-========================= */
+/* APP */
 
 .app{
-    height:100dvh;
-    display:flex;
-    flex-direction:column;
-    position:relative;
-    z-index:2;
+  position:relative;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  z-index:2;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
-.header{
-    height:82px;
-    flex:none;
-
-    background:var(--header);
-    color:white;
-
-    display:flex;
-    align-items:center;
-
-    padding:12px 18px;
-
-    gap:12px;
-
-    box-shadow:
-        0 8px 30px rgba(0,0,0,.18);
+header{
+  height:72px;
+  flex:none;
+  display:flex;
+  align-items:center;
+  padding:10px 18px;
+  border-bottom:1px solid #ffffff12;
+  background:#07111fd9;
+  backdrop-filter:blur(18px);
 }
 
-.avatar{
-    width:54px;
-    height:54px;
-
-    border-radius:50%;
-
-    background:#fff;
-
-    display:grid;
-    place-items:center;
-
-    font-size:30px;
-
-    box-shadow:
-        0 0 0 2px rgba(255,255,255,.08),
-        0 0 25px rgba(87,215,255,.25);
+.logo{
+  display:flex;
+  align-items:center;
+  gap:11px;
 }
 
-.brand-title{
-    font-size:21px;
-    font-weight:800;
+.logo-icon{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:linear-gradient(135deg,#ffffff,#dce8ff);
+  font-size:25px;
+  box-shadow:0 0 25px #54dfff20;
 }
 
-.brand-subtitle{
-    margin-top:3px;
-    font-size:13px;
-    color:#aeb9ca;
+.logo-text strong{
+  display:block;
+  font-size:18px;
 }
 
-.online{
-    margin-left:auto;
-
-    display:flex;
-    align-items:center;
-
-    gap:7px;
-
-    color:#dbe4ef;
-
-    font-size:14px;
+.logo-text span{
+  color:var(--muted);
+  font-size:12px;
 }
 
-.online-dot{
-    width:10px;
-    height:10px;
+/* STATUS */
 
-    border-radius:50%;
-
-    background:#22c55e;
-
-    box-shadow:
-        0 0 12px #22c55e;
+.status{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#b9c6d9;
+  font-size:13px;
 }
 
-/* =========================
-   CHAT AREA
-========================= */
-
-.messages{
-    flex:1;
-
-    overflow-y:auto;
-
-    padding:
-        28px
-        16px
-        125px;
-
-    scroll-behavior:smooth;
+.status-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#25d366;
+  box-shadow:0 0 12px #25d366;
 }
 
-/* Welcome */
+.status-dot.error{
+  background:#ff5757;
+  box-shadow:0 0 12px #ff5757;
+}
+
+/* CHAT */
+
+.chat{
+  flex:1;
+  overflow-y:auto;
+  padding:25px 16px 125px;
+}
+
+.chat-inner{
+  width:min(850px,100%);
+  margin:auto;
+}
 
 .welcome{
-    max-width:680px;
-
-    margin:
-        35px auto;
-
-    padding:35px 25px;
-
-    text-align:center;
-
-    background:rgba(255,255,255,.86);
-
-    backdrop-filter:blur(16px);
-
-    border:
-        1px solid rgba(255,255,255,.9);
-
-    border-radius:28px;
-
-    box-shadow:
-        0 20px 70px rgba(23,32,51,.10);
+  text-align:center;
+  padding:70px 15px 30px;
 }
 
 .welcome-icon{
-    font-size:62px;
+  width:76px;
+  height:76px;
+  margin:auto;
+  display:grid;
+  place-items:center;
+  border-radius:24px;
+  font-size:42px;
+  background:linear-gradient(135deg,#ffffff,#dce8ff);
+  box-shadow:
+    0 0 35px #4ddfff22,
+    0 20px 50px #0005;
 }
 
 .welcome h1{
-    margin:12px 0 7px;
-
-    font-size:34px;
+  margin-top:25px;
+  font-size:34px;
 }
 
 .welcome p{
-    margin:0;
-
-    color:var(--muted);
-
-    line-height:1.6;
+  color:var(--muted);
+  margin-top:9px;
 }
 
-.api-status{
-    margin-top:18px;
-
-    display:inline-block;
-
-    padding:8px 13px;
-
-    border-radius:20px;
-
-    background:#eef3ff;
-
-    color:#5168c8;
-
-    font-size:13px;
-
-    font-weight:700;
-}
-
-/* Messages */
-
-.message-row{
-    max-width:850px;
-
-    margin:
-        0 auto
-        18px;
-
-    display:flex;
-}
-
-.message-row.user{
-    justify-content:flex-end;
-}
+/* MESSAGES */
 
 .message{
-    max-width:min(80%,700px);
+  display:flex;
+  margin-bottom:22px;
+  animation:appear .25s ease;
+}
 
-    padding:
-        15px
-        19px;
-
-    border-radius:20px;
-
-    font-size:17px;
-
-    line-height:1.55;
-
-    white-space:pre-wrap;
-
-    overflow-wrap:anywhere;
-
-    box-shadow:
-        0 5px 20px rgba(23,32,51,.07);
+@keyframes appear{
+  from{
+    opacity:0;
+    transform:translateY(8px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
 }
 
 .message.user{
-    background:var(--user);
-
-    color:white;
-
-    border-bottom-right-radius:7px;
+  justify-content:flex-end;
 }
 
-.message.ai{
-    background:var(--panel);
-
-    border:
-        1px solid var(--border);
-
-    border-bottom-left-radius:7px;
+.bubble{
+  max-width:min(75%,650px);
+  padding:14px 17px;
+  border-radius:19px;
+  line-height:1.55;
+  font-size:16px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
 }
 
-.message.ai strong{
-    font-weight:800;
+.user .bubble{
+  background:linear-gradient(135deg,#28547d,#4a3d91);
+  border-bottom-right-radius:6px;
+  box-shadow:0 8px 25px #0003;
 }
 
-/* =========================
-   TYPING
-========================= */
+.ai .bubble{
+  background:#0d1a2cee;
+  border:1px solid var(--line);
+  border-bottom-left-radius:6px;
+}
+
+/* COPY */
+
+.answer-tools{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+
+.tool-btn{
+  border:1px solid var(--line);
+  background:#ffffff08;
+  color:var(--muted);
+  border-radius:9px;
+  padding:6px 10px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.tool-btn:hover{
+  color:white;
+  background:#ffffff12;
+}
+
+/* TYPING */
 
 .typing{
-    position:fixed;
-
-    left:18px;
-    bottom:105px;
-
-    z-index:20;
-
-    display:flex;
-
-    gap:5px;
-
-    padding:
-        11px
-        14px;
-
-    background:white;
-
-    border:
-        1px solid var(--border);
-
-    border-radius:16px;
-
-    box-shadow:
-        0 5px 20px rgba(0,0,0,.10);
-}
-
-.typing.hidden{
-    display:none;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:12px 15px;
+  width:max-content;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:15px;
 }
 
 .typing span{
-    width:7px;
-    height:7px;
-
-    border-radius:50%;
-
-    background:#7d8797;
-
-    animation:typing 1s infinite;
+  width:6px;
+  height:6px;
+  background:#8998ad;
+  border-radius:50%;
+  animation:bounce 1s infinite;
 }
 
 .typing span:nth-child(2){
-    animation-delay:.15s;
+  animation-delay:.15s;
 }
 
 .typing span:nth-child(3){
-    animation-delay:.30s;
+  animation-delay:.3s;
 }
 
-@keyframes typing{
-
-    50%{
-        transform:translateY(-4px);
-        opacity:.4;
-    }
+@keyframes bounce{
+  50%{
+    transform:translateY(-5px);
+    opacity:.4;
+  }
 }
 
-/* =========================
-   COMPOSER
-========================= */
+/* COMPOSER */
+
+.composer-wrap{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:15px 16px 18px;
+  background:linear-gradient(
+    transparent,
+    #07111fee 35%
+  );
+  z-index:10;
+}
 
 .composer{
-    position:fixed;
-
-    left:0;
-    right:0;
-    bottom:0;
-
-    height:94px;
-
-    z-index:30;
-
-    display:flex;
-    align-items:center;
-
-    gap:10px;
-
-    padding:
-        15px
-        16px;
-
-    background:rgba(255,255,255,.88);
-
-    backdrop-filter:blur(16px);
-
-    border-top:
-        1px solid var(--border);
+  width:min(850px,100%);
+  margin:auto;
+  display:flex;
+  align-items:flex-end;
+  gap:9px;
+  padding:9px;
+  background:#0d1a2cf2;
+  border:1px solid var(--line);
+  border-radius:23px;
+  box-shadow:0 15px 50px #0006;
+  backdrop-filter:blur(18px);
 }
 
-.input-box{
-    flex:1;
-    min-width:0;
-
-    display:flex;
-    align-items:center;
-
-    background:white;
-
-    border:
-        1px solid var(--border);
-
-    border-radius:29px;
-
-    padding-left:18px;
-
-    box-shadow:
-        0 3px 15px rgba(23,32,51,.05);
+textarea{
+  flex:1;
+  min-width:0;
+  min-height:48px;
+  max-height:130px;
+  resize:none;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:white;
+  padding:13px 12px;
+  font:inherit;
+  line-height:1.4;
 }
 
-#question{
-    width:100%;
-
-    min-width:0;
-
-    height:54px;
-
-    border:0;
-    outline:0;
-
-    resize:none;
-
-    padding:
-        15px
-        10px
-        15px
-        0;
-
-    background:transparent;
-
-    color:var(--text);
-
-    font-family:inherit;
-
-    font-size:17px;
-
-    line-height:1.45;
-}
-
-#question::placeholder{
-    color:#8b96a8;
+textarea::placeholder{
+  color:#748399;
 }
 
 .send{
-    width:53px;
-    height:53px;
-
-    flex:none;
-
-    border:0;
-
-    border-radius:50%;
-
-    background:#172033;
-
-    color:white;
-
-    font-size:23px;
-
-    display:grid;
-    place-items:center;
-
-    cursor:pointer;
-
-    transition:
-        transform .2s,
-        box-shadow .2s;
+  width:48px;
+  height:48px;
+  flex:none;
+  border:0;
+  border-radius:15px;
+  background:linear-gradient(135deg,#39cfff,#756cff);
+  color:white;
+  font-size:21px;
+  cursor:pointer;
+  box-shadow:0 5px 20px #4dbdff33;
 }
 
 .send:hover{
-    transform:scale(1.05);
-
-    box-shadow:
-        0 0 20px rgba(102,126,234,.45);
+  transform:translateY(-1px);
 }
 
 .send:disabled{
-    opacity:.5;
-    cursor:not-allowed;
-    transform:none;
+  opacity:.5;
+  cursor:not-allowed;
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* ERROR */
+
+.error-box{
+  margin:15px auto;
+  width:min(850px,100%);
+  padding:13px 15px;
+  border:1px solid #ff575744;
+  background:#ff575711;
+  color:#ff9c9c;
+  border-radius:12px;
+  display:none;
+  font-size:14px;
+}
+
+/* MOBILE */
 
 @media(max-width:600px){
 
-    .header{
-        height:76px;
-        padding:10px 13px;
-    }
+  header{
+    height:64px;
+    padding:8px 12px;
+  }
 
-    .avatar{
-        width:48px;
-        height:48px;
-        font-size:27px;
-    }
+  .logo-icon{
+    width:40px;
+    height:40px;
+  }
 
-    .brand-title{
-        font-size:18px;
-    }
+  .logo-text strong{
+    font-size:16px;
+  }
 
-    .brand-subtitle{
-        font-size:12px;
-    }
+  .welcome{
+    padding-top:45px;
+  }
 
-    .online{
-        font-size:12px;
-    }
+  .welcome h1{
+    font-size:27px;
+  }
 
-    .messages{
-        padding:
-            18px
-            11px
-            115px;
-    }
+  .bubble{
+    max-width:88%;
+    font-size:15px;
+  }
 
-    .message{
-        max-width:90%;
-        font-size:16px;
-    }
+  .chat{
+    padding-left:11px;
+    padding-right:11px;
+  }
 
-    .welcome{
-        margin:25px auto;
-        padding:30px 18px;
-    }
+  .composer-wrap{
+    padding:9px;
+  }
 
-    .welcome h1{
-        font-size:28px;
-    }
-
-    .composer{
-        height:84px;
-        padding:12px;
-    }
-
-    #question{
-        height:50px;
-        font-size:16px;
-    }
-
-    .send{
-        width:50px;
-        height:50px;
-    }
+  .composer{
+    border-radius:20px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     LIGHTNING VFX
-========================= -->
-
-<div class="lightning" aria-hidden="true">
-
-    <div class="bolt"></div>
-    <div class="bolt"></div>
-    <div class="bolt"></div>
-    <div class="bolt"></div>
-
+<div class="bg">
+  <div class="glow one"></div>
+  <div class="glow two"></div>
 </div>
 
-
-<!-- =========================
-     APP
-========================= -->
+<div class="lightning">
+  <div class="bolt"></div>
+  <div class="bolt"></div>
+  <div class="bolt"></div>
+</div>
 
 <div class="app">
 
+<header>
+  <div class="logo">
+    <div class="logo-icon">🧠</div>
 
-    <!-- HEADER -->
+    <div class="logo-text">
+      <strong>Learning AI</strong>
+      <span>Ask anything</span>
+    </div>
+  </div>
 
-    <header class="header">
+  <div class="status">
+    <span id="statusDot" class="status-dot"></span>
+    <span id="statusText">Ready</span>
+  </div>
+</header>
 
-        <div class="avatar">
-            🧠
-        </div>
+<main id="chat" class="chat">
+  <div id="chatInner" class="chat-inner">
 
-        <div>
-
-            <div class="brand-title">
-                Learning AI
-            </div>
-
-            <div class="brand-subtitle">
-                API Testing Chat
-            </div>
-
-        </div>
-
-        <div class="online">
-
-            <span class="online-dot"></span>
-
-            API Online
-
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         CHAT
-    ========================= -->
-
-    <main
-        id="messages"
-        class="messages"
-    >
-
-        <div
-            id="welcome"
-            class="welcome"
-        >
-
-            <div class="welcome-icon">
-                🧠
-            </div>
-
-            <h1>
-                Talk with Learning AI
-            </h1>
-
-            <p>
-                This chat uses your read-only
-                <strong>/api/ask</strong>
-                endpoint.
-            </p>
-
-            <div class="api-status">
-                POST /api/ask
-            </div>
-
-        </div>
-
-    </main>
-
-
-    <!-- =========================
-         TYPING
-    ========================= -->
-
-    <div
-        id="typing"
-        class="typing hidden"
-    >
-
-        <span></span>
-        <span></span>
-        <span></span>
-
+    <div id="welcome" class="welcome">
+      <div class="welcome-icon">🧠</div>
+      <h1>Ask Learning AI</h1>
+      <p>Ask a question from the AI's learned knowledge.</p>
     </div>
 
+  </div>
+</main>
 
-    <!-- =========================
-         COMPOSER
-    ========================= -->
+<div id="errorBox" class="error-box"></div>
 
-    <form
-        id="chatForm"
-        class="composer"
-    >
+<div class="composer-wrap">
 
-        <div class="input-box">
+  <form id="form" class="composer">
 
-            <textarea
-                id="question"
-                rows="1"
-                placeholder="Ask your AI..."
-                autocomplete="off"
-                spellcheck="true"
-            ></textarea>
+    <textarea
+      id="input"
+      rows="1"
+      placeholder="Ask your question..."
+      autocomplete="off"
+      spellcheck="true"
+    ></textarea>
 
-        </div>
+    <button id="send" class="send" type="submit">
+      ➤
+    </button>
 
-        <button
-            id="sendButton"
-            class="send"
-            type="submit"
-            aria-label="Send"
-        >
-            ➤
-        </button>
-
-    </form>
+  </form>
 
 </div>
 
+</div>
 
 <script>
 
-/* =====================================================
+/* =========================================================
    CONFIGURATION
-===================================================== */
+   ========================================================= */
 
-/*
-   Because this HTML is intended to be hosted on the
-   SAME Vercel project as your API, this is:
-
-       /api/ask
-
-   If you host this HTML somewhere else, change it to:
-
-       https://heart-ai-omega.vercel.app/api/ask
-*/
-
-const API_URL = "/api/ask";
+const API_URL =
+  "https://heart-ai-omega.vercel.app/api/ask";
 
 
-/* =====================================================
+/* =========================================================
    ELEMENTS
-===================================================== */
+   ========================================================= */
 
-const messages =
-    document.getElementById("messages");
+const form = document.getElementById("form");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+const chat = document.getElementById("chat");
+const chatInner = document.getElementById("chatInner");
+const welcome = document.getElementById("welcome");
 
-const welcome =
-    document.getElementById("welcome");
-
-const form =
-    document.getElementById("chatForm");
-
-const questionInput =
-    document.getElementById("question");
-
-const sendButton =
-    document.getElementById("sendButton");
-
-const typing =
-    document.getElementById("typing");
+const errorBox = document.getElementById("errorBox");
+const statusText = document.getElementById("statusText");
+const statusDot = document.getElementById("statusDot");
 
 
-/* =====================================================
+/* =========================================================
+   AUTO RESIZE
+   ========================================================= */
+
+input.addEventListener("input", () => {
+
+  input.style.height = "auto";
+
+  input.style.height =
+    Math.min(input.scrollHeight,130) + "px";
+
+});
+
+
+/* =========================================================
    ESCAPE HTML
-===================================================== */
+   ========================================================= */
 
 function escapeHTML(text){
 
-    return String(text)
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
-        .replace(/&/g,"&amp;")
-
-        .replace(/</g,"&lt;")
-
-        .replace(/>/g,"&gt;")
-
-        .replace(/"/g,"&quot;")
-
-        .replace(/'/g,"&#039;");
 }
 
 
-/* =====================================================
-   FORMAT AI ANSWER
-===================================================== */
+/* =========================================================
+   BASIC BOLD SUPPORT
+   ========================================================= */
 
 function formatAnswer(text){
 
-    let safe =
-        escapeHTML(text);
+  let safe = escapeHTML(text);
 
-    /*
-       Supports:
+  safe = safe.replace(
+    /\*\*(.+?)\*\*/gs,
+    "<strong>$1</strong>"
+  );
 
-       **bold text**
-    */
+  return safe;
 
-    safe =
-        safe.replace(
-            /\*\*(.+?)\*\*/gs,
-            "<strong>$1</strong>"
-        );
-
-    return safe;
 }
 
 
-/* =====================================================
-   ADD MESSAGE
-===================================================== */
+/* =========================================================
+   ADD USER MESSAGE
+   ========================================================= */
 
-function addMessage(
-    text,
-    type
-){
+function addUserMessage(text){
 
-    if(welcome){
+  welcome.style.display = "none";
 
-        welcome.remove();
+  const wrapper =
+    document.createElement("div");
 
-    }
+  wrapper.className = "message user";
 
-    const row =
-        document.createElement("div");
+  wrapper.innerHTML = `
+    <div class="bubble">
+      ${formatAnswer(text)}
+    </div>
+  `;
 
-    row.className =
-        "message-row " + type;
+  chatInner.appendChild(wrapper);
 
+  scrollBottom();
 
-    const bubble =
-        document.createElement("div");
-
-    bubble.className =
-        "message " +
-        (
-            type === "user"
-            ? "user"
-            : "ai"
-        );
-
-
-    if(type === "ai"){
-
-        bubble.innerHTML =
-            formatAnswer(text);
-
-    }else{
-
-        bubble.textContent =
-            text;
-
-    }
-
-
-    row.appendChild(bubble);
-
-    messages.appendChild(row);
-
-
-    messages.scrollTop =
-        messages.scrollHeight;
 }
 
 
-/* =====================================================
-   TYPING
-===================================================== */
+/* =========================================================
+   ADD AI MESSAGE
+   ========================================================= */
 
-function setTyping(show){
+function addAIMessage(text){
 
-    typing.classList.toggle(
-        "hidden",
-        !show
-    );
-}
+  const wrapper =
+    document.createElement("div");
 
+  wrapper.className = "message ai";
 
-/* =====================================================
-   ASK API
-===================================================== */
+  const bubble =
+    document.createElement("div");
 
-async function askAI(question){
+  bubble.className = "bubble";
 
-    const response =
-        await fetch(
-            API_URL,
-            {
-                method:"POST",
+  bubble.innerHTML = formatAnswer(text);
 
-                headers:{
-                    "Content-Type":
-                        "application/json"
-                },
+  const tools =
+    document.createElement("div");
 
-                body:JSON.stringify({
-                    question:question
-                })
-            }
-        );
+  tools.className = "answer-tools";
 
+  const copy =
+    document.createElement("button");
 
-    /*
-       Read the response as text first.
-       This lets us display useful errors when
-       Vercel returns HTML instead of JSON.
-    */
+  copy.className = "tool-btn";
 
-    const responseText =
-        await response.text();
+  copy.textContent = "📋 Copy";
 
-
-    let data;
-
+  copy.onclick = async () => {
 
     try{
 
-        data =
-            JSON.parse(responseText);
+      await navigator.clipboard.writeText(text);
+
+      copy.textContent = "✓ Copied";
+
+      setTimeout(() => {
+        copy.textContent = "📋 Copy";
+      },1500);
 
     }catch{
 
-        throw new Error(
-            "Server returned HTTP " +
-            response.status +
-            ". Response: " +
-            responseText.slice(0,250)
-        );
+      copy.textContent = "Copy failed";
 
     }
 
+  };
 
-    if(!response.ok){
+  tools.appendChild(copy);
 
-        throw new Error(
-            data.error ||
-            "API request failed. HTTP " +
-            response.status
-        );
+  wrapper.appendChild(bubble);
+  wrapper.appendChild(tools);
 
-    }
+  chatInner.appendChild(wrapper);
 
+  scrollBottom();
 
-    return (
-        data.answer ||
-        "I don't know about it"
-    );
 }
 
 
-/* =====================================================
-   SEND MESSAGE
-===================================================== */
+/* =========================================================
+   TYPING
+   ========================================================= */
 
-form.addEventListener(
-    "submit",
-    async function(event){
+function showTyping(){
 
-        event.preventDefault();
+  hideTyping();
 
+  const wrapper =
+    document.createElement("div");
 
-        const question =
-            questionInput.value.trim();
+  wrapper.id = "typingMessage";
 
+  wrapper.className = "message ai";
 
-        if(
-            !question ||
-            sendButton.disabled
-        ){
+  wrapper.innerHTML = `
+    <div class="typing">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  `;
 
-            return;
+  chatInner.appendChild(wrapper);
 
-        }
+  scrollBottom();
 
-
-        /* Show question */
-
-        addMessage(
-            question,
-            "user"
-        );
+}
 
 
-        /* Clear input */
+function hideTyping(){
 
-        questionInput.value = "";
+  const old =
+    document.getElementById("typingMessage");
 
-        questionInput.style.height =
-            "54px";
+  if(old) old.remove();
 
-
-        /* Disable send */
-
-        sendButton.disabled =
-            true;
+}
 
 
-        setTyping(true);
+/* =========================================================
+   SCROLL
+   ========================================================= */
+
+function scrollBottom(){
+
+  requestAnimationFrame(() => {
+
+    chat.scrollTop = chat.scrollHeight;
+
+  });
+
+}
 
 
-        try{
+/* =========================================================
+   ERROR
+   ========================================================= */
 
-            const answer =
-                await askAI(question);
+function showError(message){
 
+  errorBox.textContent = message;
 
-            setTyping(false);
+  errorBox.style.display = "block";
 
+  statusText.textContent = "Connection error";
 
-            addMessage(
-                answer,
-                "ai"
-            );
+  statusDot.classList.add("error");
 
-
-        }catch(error){
-
-            setTyping(false);
+}
 
 
-            /*
-               Show the REAL error.
-               This is useful for diagnosing
-               Vercel/API problems.
-            */
+function clearError(){
 
-            addMessage(
-                "⚠️ " +
-                (
-                    error.message ||
-                    "Unable to connect to the API."
-                ),
-                "ai"
-            );
+  errorBox.style.display = "none";
+
+  statusText.textContent = "Ready";
+
+  statusDot.classList.remove("error");
+
+}
 
 
-            console.error(
-                "Learning AI API error:",
-                error
-            );
+/* =========================================================
+   ASK API
+   ========================================================= */
 
-        }finally{
+async function askAI(question){
 
-            sendButton.disabled =
-                false;
+  const response =
+    await fetch(API_URL,{
 
-            questionInput.focus();
+      method:"POST",
 
-        }
+      headers:{
+        "Content-Type":"application/json"
+      },
 
-    }
-);
+      body:JSON.stringify({
+        question:question
+      })
 
-
-/* =====================================================
-   ENTER / CTRL+ENTER
-===================================================== */
-
-questionInput.addEventListener(
-    "keydown",
-    function(event){
-
-        /*
-           Ctrl + Enter
-           or
-           Android/desktop form submission
-        */
-
-        if(
-            event.key === "Enter" &&
-            (event.ctrlKey || event.metaKey)
-        ){
-
-            event.preventDefault();
-
-            form.requestSubmit();
-
-        }
-
-    }
-);
+    });
 
 
-/* =====================================================
-   AUTO RESIZE
-===================================================== */
+  let data;
 
-questionInput.addEventListener(
-    "input",
-    function(){
+  try{
 
-        this.style.height =
-            "auto";
+    data = await response.json();
 
-        this.style.height =
-            Math.min(
-                this.scrollHeight,
-                120
-            ) + "px";
+  }catch{
 
-    }
-);
+    throw new Error(
+      "The server returned an invalid response."
+    );
+
+  }
 
 
-/* =====================================================
-   INITIAL FOCUS
-===================================================== */
+  if(!response.ok){
 
-window.addEventListener(
-    "load",
-    function(){
+    throw new Error(
+      data?.error ||
+      `API error (${response.status})`
+    );
 
-        questionInput.focus();
+  }
 
-    }
-);
+
+  if(typeof data.answer !== "string"){
+
+    throw new Error(
+      "The API did not return an answer."
+    );
+
+  }
+
+
+  return data.answer;
+
+}
+
+
+/* =========================================================
+   SEND
+   ========================================================= */
+
+form.addEventListener("submit",async event => {
+
+  event.preventDefault();
+
+  const question =
+    input.value.trim();
+
+  if(!question || send.disabled)
+    return;
+
+
+  clearError();
+
+  addUserMessage(question);
+
+  input.value = "";
+
+  input.style.height = "auto";
+
+  send.disabled = true;
+
+  statusText.textContent = "Thinking...";
+
+  showTyping();
+
+
+  try{
+
+    const answer =
+      await askAI(question);
+
+    hideTyping();
+
+    addAIMessage(answer);
+
+    statusText.textContent = "Online";
+
+  }catch(error){
+
+    hideTyping();
+
+    showError(
+      error.message ||
+      "Unable to connect to Learning AI."
+    );
+
+  }finally{
+
+    send.disabled = false;
+
+    input.focus();
+
+  }
+
+});
+
+
+/* =========================================================
+   ENTER TO SEND
+   SHIFT + ENTER = NEW LINE
+   ========================================================= */
+
+input.addEventListener("keydown",event => {
+
+  if(
+    event.key === "Enter" &&
+    !event.shiftKey
+  ){
+
+    event.preventDefault();
+
+    form.requestSubmit();
+
+  }
+
+});
+
+
+/* =========================================================
+   INITIAL STATUS TEST
+   ========================================================= */
+
+async function testConnection(){
+
+  try{
+
+    /*
+      We don't send a fake question here because
+      /api/ask is designed for POST questions.
+      The status simply starts as Ready.
+    */
+
+    statusText.textContent = "Online";
+
+  }catch{
+
+    statusText.textContent = "Offline";
+
+    statusDot.classList.add("error");
+
+  }
+
+}
+
+
+testConnection();
+
+input.focus();
 
 </script>
 
