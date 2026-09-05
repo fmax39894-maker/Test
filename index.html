@@ -1,78 +1,28 @@
-
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Voice Arduino Control</title>
-<style>
-body{
-  font-family:Arial;
-  text-align:center;
-  padding:30px;
-}
-button{
-  padding:15px 25px;
-  font-size:18px;
-  margin:10px;
-}
-#status{
-  margin-top:20px;
-  font-size:20px;
-}
-</style>
-</head>
 <body>
+<h2>Arduino USB Test</h2>
 
-<h2>🎤 Voice Arduino Control</h2>
-
-<button id="connect">Connect Arduino</button>
-<button id="listen">Start Listening</button>
-
-<div id="status">Disconnected</div>
+<button onclick="test()">Test USB</button>
+<p id="out"></p>
 
 <script>
-let port, writer;
-
-async function connectArduino() {
-  port = await navigator.serial.requestPort();
-  await port.open({ baudRate: 9600 });
-  writer = port.writable.getWriter();
-  status.innerHTML = "Arduino Connected";
-}
-
-async function send(text){
-  const encoder = new TextEncoder();
-  await writer.write(encoder.encode(text + "\n"));
-}
-
-const SpeechRecognition =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-const recognition = new SpeechRecognition();
-
-recognition.lang = "en-US";
-recognition.continuous = true;
-
-recognition.onresult = async (e)=>{
-  let t = e.results[e.results.length-1][0].transcript.trim().toLowerCase();
-
-  status.innerHTML = "Heard: " + t;
-
-  if(t.includes("on")){
-    await send("ON");
-    status.innerHTML="LED ON";
+async function test() {
+  if (!("serial" in navigator)) {
+    document.getElementById("out").innerText =
+      "❌ Web Serial is NOT supported in this browser.";
+    return;
   }
 
-  if(t.includes("off")){
-    await send("OFF");
-    status.innerHTML="LED OFF";
+  try {
+    const port = await navigator.serial.requestPort();
+    document.getElementById("out").innerText =
+      "✅ Arduino USB device detected!";
+  } catch (e) {
+    document.getElementById("out").innerText =
+      "❌ " + e.message;
   }
-};
-
-connect.onclick=connectArduino;
-listen.onclick=()=>recognition.start();
+}
 </script>
-
 </body>
 </html>
