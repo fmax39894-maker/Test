@@ -56,6 +56,23 @@
       radial-gradient(circle at 50% 45%,rgba(39,198,255,.07),transparent 35%),
       rgba(0,0,0,.13);
   }
+  .start-screen{
+    position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;
+    background:rgba(3,12,24,.58);backdrop-filter:blur(5px);transition:.35s
+  }
+  .start-screen.hidden{opacity:0;pointer-events:none}
+  .start-btn{
+    position:relative;border:0;cursor:pointer;color:#06101a;font-size:20px;font-weight:900;
+    padding:18px 42px;border-radius:20px;background:linear-gradient(135deg,#65e572,#b4ff91);
+    box-shadow:0 0 0 0 rgba(101,229,114,.5),0 16px 40px rgba(0,0,0,.35);
+    animation:startPulse 1.7s infinite;transition:.2s
+  }
+  .start-btn:hover{transform:scale(1.06)}
+  .start-btn:active{transform:scale(.96)}
+  @keyframes startPulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(101,229,114,.45),0 16px 40px rgba(0,0,0,.35)}
+    50%{box-shadow:0 0 0 16px rgba(101,229,114,0),0 18px 45px rgba(0,0,0,.4)}
+  }
   .instruction{
     position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:4;
     width:min(650px,90%);text-align:center;padding:11px 16px;border-radius:14px;
@@ -145,6 +162,9 @@
   </section>
 
   <section class="game" id="game">
+    <div class="start-screen" id="startScreen">
+      <button class="start-btn" id="startBtn">▶ START QUIZ</button>
+    </div>
     <div class="instruction">
       Click the <span class="hint">next most reactive metal</span>. Wrong choices will vibrate.
     </div>
@@ -185,7 +205,7 @@ const metals = [
 metals.push(["Pt","Platinum"]);
 
 let order = metals.map((_,i)=>i);
-let placed = 0, tries = 0, start = null, timer = null, finished = false;
+let placed = 0, tries = 0, start = null, timer = null, finished = false, quizStarted = false;
 const game = document.getElementById("game");
 const slots = document.getElementById("slots");
 
@@ -208,19 +228,31 @@ function arrangeButtons(){
   const rows = Math.ceil(buttons.length / cols);
   const bw = Math.min(104, Math.max(82, (rect.width - padX*2 - gapX*(cols-1)) / cols));
   const bh = 74;
-  const totalW = cols*bw + (cols-1)*gapX;
-  const startX = Math.max(padX, (rect.width-totalW)/2);
+
+  // Create safe grid cells, then shuffle the cells so the cards are NOT
+  // spatially arranged in reactivity order. Cards still never overlap.
+  const cells = [];
+  for(let r=0;r<rows;r++){
+    const rowCount = Math.min(cols, buttons.length-r*cols);
+    const rowW = rowCount*bw + (rowCount-1)*gapX;
+    const rowStart = (rect.width-rowW)/2;
+    for(let c=0;c<rowCount;c++){
+      cells.push({
+        x: rowStart + c*(bw+gapX),
+        y: top + r*(bh+gapY)
+      });
+    }
+  }
+
+  for(let i=cells.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [cells[i],cells[j]]=[cells[j],cells[i]];
+  }
 
   buttons.forEach((btn,index)=>{
-    const row = Math.floor(index/cols);
-    const col = index%cols;
-    const rowCount = Math.min(cols, buttons.length-row*cols);
-    const rowW = rowCount*bw + (rowCount-1)*gapX;
-    const x = (rect.width-rowW)/2 + col*(bw+gapX);
-    const y = top + row*(bh+gapY);
     btn.style.width = bw+"px";
-    btn.style.left = x+"px";
-    btn.style.top = y+"px";
+    btn.style.left = cells[index].x+"px";
+    btn.style.top = cells[index].y+"px";
   });
 
   const needed = top + rows*bh + Math.max(0,rows-1)*gapY + 28;
@@ -265,7 +297,7 @@ function toast(){
 }
 
 function pick(i,b){
-  if(finished) return;
+  if(finished || !quizStarted) return;
   startTimer();
   tries++;
   const expected = order[placed];
@@ -296,9 +328,23 @@ function finish(){
   document.getElementById("overlay").classList.remove("hidden");
 }
 
+
+function beginQuiz(){
+  if(quizStarted) return;
+  quizStarted = true;
+  start = performance.now();
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("time").textContent = "0.0s";
+  timer = setInterval(()=>{
+    document.getElementById("time").textContent =
+      ((performance.now()-start)/1000).toFixed(1)+"s";
+  },100);
+}
+
 function reset(){
-  finished=false; placed=0; tries=0; start=null; clearInterval(timer);
+  finished=false; quizStarted=false; placed=0; tries=0; start=null; clearInterval(timer);
   document.getElementById("time").textContent="0.0s";
+  document.getElementById("startScreen").classList.remove("hidden");
   updateStats(); initSlots(); makeButtons();
   document.getElementById("overlay").classList.add("hidden");
 }
@@ -327,6 +373,7 @@ Congratulations! You arranged the complete reactivity series correctly.
   URL.revokeObjectURL(a.href);
 }
 
+document.getElementById("startBtn").addEventListener("click",beginQuiz);
 document.getElementById("restart").addEventListener("click",reset);
 document.getElementById("playAgain").addEventListener("click",reset);
 document.getElementById("download").addEventListener("click",downloadResult);
