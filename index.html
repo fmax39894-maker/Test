@@ -40,9 +40,10 @@
   }
   .series-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
   .series-head h2{font-size:16px;margin:0}.series-head span{color:var(--muted);font-size:13px}
-  .slots{display:grid;grid-template-columns:repeat(13,minmax(54px,1fr));gap:8px}
+  .slots{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:thin}
+  .slots::-webkit-scrollbar{height:6px}.slots::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:20px}
   .slot{
-    min-height:66px;border:1px dashed rgba(255,255,255,.2);border-radius:14px;
+    flex:0 0 70px;min-height:66px;border:1px dashed rgba(255,255,255,.2);border-radius:14px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     color:#8fa4b9;font-size:12px;transition:.25s;
   }
@@ -108,15 +109,15 @@
   }
   .toast.show{opacity:1;transform:translate(-50%,0)}
   @media(max-width:850px){
-    .slots{grid-template-columns:repeat(7,1fr)}
-    .game{min-height:640px}
+    .game{min-height:650px}
   }
   @media(max-width:520px){
     header{align-items:flex-start;flex-direction:column}
     .stats{justify-content:flex-start}
-    .slots{grid-template-columns:repeat(4,1fr)}
-    .game{min-height:700px}
-    .element{min-width:78px;padding:10px 8px}.element .sym{font-size:21px}
+    .game{min-height:760px}
+    .element{min-width:0;padding:10px 6px;border-radius:16px}
+    .element .sym{font-size:21px}
+    .element .nm{font-size:10px}
     .bottom{align-items:flex-start;flex-direction:column}
   }
 </style>
@@ -199,16 +200,31 @@ function initSlots(){
   });
 }
 
-function randomPos(btn){
+function arrangeButtons(){
+  const buttons = [...game.querySelectorAll(".element")];
   const rect = game.getBoundingClientRect();
-  const pad = 12;
-  const topMin = 82;
-  const maxX = Math.max(pad, rect.width - btn.offsetWidth - pad);
-  const maxY = Math.max(topMin, rect.height - btn.offsetHeight - pad);
-  const x = pad + Math.random() * Math.max(0,maxX-pad);
-  const y = topMin + Math.random() * Math.max(0,maxY-topMin);
-  btn.style.left = x+"px";
-  btn.style.top = y+"px";
+  const padX = 18, top = 95, gapX = 18, gapY = 22;
+  const cols = Math.min(4, Math.max(2, Math.floor((rect.width - padX*2 + gapX) / (110 + gapX))));
+  const rows = Math.ceil(buttons.length / cols);
+  const bw = Math.min(104, Math.max(82, (rect.width - padX*2 - gapX*(cols-1)) / cols));
+  const bh = 74;
+  const totalW = cols*bw + (cols-1)*gapX;
+  const startX = Math.max(padX, (rect.width-totalW)/2);
+
+  buttons.forEach((btn,index)=>{
+    const row = Math.floor(index/cols);
+    const col = index%cols;
+    const rowCount = Math.min(cols, buttons.length-row*cols);
+    const rowW = rowCount*bw + (rowCount-1)*gapX;
+    const x = (rect.width-rowW)/2 + col*(bw+gapX);
+    const y = top + row*(bh+gapY);
+    btn.style.width = bw+"px";
+    btn.style.left = x+"px";
+    btn.style.top = y+"px";
+  });
+
+  const needed = top + rows*bh + Math.max(0,rows-1)*gapY + 28;
+  game.style.minHeight = Math.max(560, needed) + "px";
 }
 
 function makeButtons(){
@@ -220,8 +236,8 @@ function makeButtons(){
     b.innerHTML = `<span class="sym">${m[0]}</span><span class="nm">${m[1]}</span>`;
     b.addEventListener("click", ()=>pick(i,b));
     game.appendChild(b);
-    requestAnimationFrame(()=>randomPos(b));
   });
+  requestAnimationFrame(arrangeButtons);
 }
 
 function updateStats(){
@@ -315,7 +331,7 @@ document.getElementById("restart").addEventListener("click",reset);
 document.getElementById("playAgain").addEventListener("click",reset);
 document.getElementById("download").addEventListener("click",downloadResult);
 window.addEventListener("resize",()=>{
-  document.querySelectorAll(".element").forEach(randomPos);
+  arrangeButtons();
 });
 reset();
 </script>
