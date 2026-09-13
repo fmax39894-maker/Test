@@ -119,6 +119,17 @@
   .result b{display:block;font-size:25px}.result span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
   .winner-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   .secondary{background:rgba(255,255,255,.09)!important;color:white!important;border:1px solid var(--line)!important}
+  #download{position:relative;overflow:hidden;animation:downloadGlow 1.8s ease-in-out infinite}
+  #download::after{
+    content:"";position:absolute;top:-70%;left:-35%;width:28%;height:240%;
+    background:rgba(255,255,255,.45);transform:rotate(25deg);animation:downloadSweep 2.2s linear infinite;
+    pointer-events:none
+  }
+  @keyframes downloadGlow{
+    0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(101,229,114,.35)}
+    50%{transform:scale(1.035);box-shadow:0 0 0 9px rgba(101,229,114,0)}
+  }
+  @keyframes downloadSweep{0%{left:-40%}55%,100%{left:130%}}
   .toast{
     position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:30;
     padding:11px 16px;border-radius:14px;background:#111d2d;border:1px solid var(--line);transition:.25s;
@@ -188,7 +199,7 @@
       <div class="result"><b id="accuracy">100%</b><span>Accuracy</span></div>
     </div>
     <div class="winner-actions">
-      <button class="action" id="download">⬇ Download Result</button>
+      <button class="action" id="download">⬇ Download Winner Image</button>
       <button class="action secondary" id="playAgain">Play Again</button>
     </div>
   </div>
@@ -350,27 +361,92 @@ function reset(){
 }
 
 function downloadResult(){
-  const time=document.getElementById("finalTime").textContent;
-  const tr=document.getElementById("finalTries").textContent;
-  const acc=document.getElementById("accuracy").textContent;
-  const text =
-`CHEMISTRY QUIZ — WINNER
-========================
-Reactivity Series Challenge
+  const time = document.getElementById("finalTime").textContent;
+  const tr = document.getElementById("finalTries").textContent;
+  const acc = document.getElementById("accuracy").textContent;
 
-Time Taken: ${time}
-No. of Tries: ${tr}
-Accuracy: ${acc}
-Correct Order: K → Na → Ca → Mg → Al → Zn → Fe → Pb → H → Cu → Hg → Ag → Au → Pt
+  const canvas = document.createElement("canvas");
+  canvas.width = 1200;
+  canvas.height = 800;
+  const ctx = canvas.getContext("2d");
 
-Congratulations! You arranged the complete reactivity series correctly.
-`;
-  const blob=new Blob([text],{type:"text/plain"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="chemistry-quiz-result.txt";
-  a.click();
-  URL.revokeObjectURL(a.href);
+  // Background
+  const bg = ctx.createLinearGradient(0,0,1200,800);
+  bg.addColorStop(0,"#08111f");
+  bg.addColorStop(1,"#163754");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,1200,800);
+
+  // Decorative glow
+  const glow = ctx.createRadialGradient(600,190,20,600,190,360);
+  glow.addColorStop(0,"rgba(101,229,114,.22)");
+  glow.addColorStop(1,"rgba(101,229,114,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0,0,1200,800);
+
+  // Card
+  ctx.fillStyle = "rgba(10,25,42,.94)";
+  roundRect(ctx,110,75,980,650,34);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(101,229,114,.55)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.textAlign="center";
+  ctx.fillStyle="#65e572";
+  ctx.font="bold 72px Arial";
+  ctx.fillText("🏆",600,175);
+
+  ctx.fillStyle="#ffffff";
+  ctx.font="bold 64px Arial";
+  ctx.fillText("WINNER!",600,260);
+
+  ctx.fillStyle="#b8c7d8";
+  ctx.font="28px Arial";
+  ctx.fillText("CHEMISTRY QUIZ",600,310);
+  ctx.font="22px Arial";
+  ctx.fillText("Reactivity Series Challenge",600,345);
+
+  const cards=[
+    ["TIME TAKEN",time],
+    ["NO. OF TRIES",tr],
+    ["CORRECT ORDER","14 / 14"],
+    ["ACCURACY",acc]
+  ];
+  cards.forEach((item,i)=>{
+    const x = 165 + (i%2)*455;
+    const y = 395 + Math.floor(i/2)*125;
+    ctx.fillStyle="rgba(255,255,255,.07)";
+    roundRect(ctx,x,y,410,100,18); ctx.fill();
+    ctx.fillStyle="#b8c7d8";
+    ctx.font="16px Arial";
+    ctx.fillText(item[0],x+205,y+30);
+    ctx.fillStyle="#65e572";
+    ctx.font="bold 31px Arial";
+    ctx.fillText(item[1],x+205,y+70);
+  });
+
+  ctx.fillStyle="#8fa4b9";
+  ctx.font="18px Arial";
+  ctx.fillText("K → Na → Ca → Mg → Al → Zn → Fe → Pb → H → Cu → Hg → Ag → Au → Pt",600,675);
+
+  canvas.toBlob(blob=>{
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="chemistry-quiz-winner.png";
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  },"image/png");
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
 }
 
 document.getElementById("startBtn").addEventListener("click",beginQuiz);
