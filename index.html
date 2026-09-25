@@ -38,43 +38,73 @@ h1{text-align:center;margin:0 0 8px;font-size:clamp(28px,6vw,44px)}
 
 <script>
 const questions=[
-["sin 30°",["1/2","√3/2","1/√2","1"],0],
-["cos 60°",["√3/2","1/2","1/√2","0"],1],
-["tan 45°",["0","1/√3","1","√3"],2],
-["cot 30°",["1/√3","1","√3","0"],2],
-["sec 60°",["2","1/2","2/√3","1"],0],
-["cosec 30°",["1/2","2","2/√3","1"],1],
-["cos 0°",["0","1/2","1","√3/2"],2],
-["sin 90°",["0","1/√2","√3/2","1"],3],
-["tan 60°",["1/√3","1","√3","0"],2],
-["sec 0°",["0","1","2","2/√3"],1],
-["cosec 90°",["1/2","1","√3/2","0"],1],
-["sin 60°",["1/2","√3/2","1/√2","1"],1],
-["cos 30°",["1/2","√3/2","1/√2","1"],1],
-["tan 30°",["√3","1","1/√3","0"],2],
-["cot 60°",["√3","1/√3","1","0"],1],
-["sec 30°",["2","2/√3","√3","1"],1],
-["cosec 60°",["2","2/√3","√3","1"],1],
 ["sin 0°",["0","1/2","1/√2","1"],0],
-["cot 90°",["0","1","√3","undefined"],0],
-["tan 0°",["0","1","1/√3","√3"],0]
+["sin 30°",["1/2","√3/2","1/√2","1"],0],
+["sin 45°",["1/2","√3/2","1/√2","1"],2],
+["sin 60°",["1/2","√3/2","1/√2","1"],1],
+["sin 90°",["0","1/√2","√3/2","1"],3],
+
+["cos 0°",["0","1/2","√3/2","1"],3],
+["cos 30°",["1/2","√3/2","1/√2","1"],1],
+["cos 45°",["1/2","√3/2","1/√2","1"],2],
+["cos 60°",["√3/2","1/2","1/√2","0"],1],
+["cos 90°",["0","1/2","1/√2","1"],0],
+
+["tan 0°",["0","1","1/√3","√3"],0],
+["tan 30°",["√3","1","1/√3","0"],2],
+["tan 45°",["0","1/√3","1","√3"],2],
+["tan 60°",["1/√3","1","√3","0"],2],
+["tan 90°",["0","1","√3","Undefined"],3],
+
+["cot 0°",["0","1","√3","Undefined"],3],
+["cot 30°",["1/√3","1","√3","0"],2],
+["cot 45°",["0","1/√3","1","√3"],2],
+["cot 60°",["√3","1/√3","1","0"],1],
+["cot 90°",["0","1","√3","Undefined"],0],
+
+["sec 0°",["0","1","2","Undefined"],1],
+["sec 30°",["2","2/√3","√3","1"],1],
+["sec 45°",["1","√2","2","√3"],1],
+["sec 60°",["2","1/2","2/√3","1"],0],
+["sec 90°",["0","1","√2","Undefined"],3],
+
+["cosec 0°",["0","1","√2","Undefined"],3],
+["cosec 30°",["1/2","2","2/√3","1"],1],
+["cosec 45°",["1","√2","2","√3"],1],
+["cosec 60°",["2","2/√3","√3","1"],1],
+["cosec 90°",["0","1","√2","Undefined"],1]
 ];
 
-let quiz=[],current=0,score=0,selected=false,answers=[];
+let quiz=[],current=0,score=0,selected=false,mode=10;
+
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
-function start(){
-  quiz=shuffle(questions).slice(0,15).map(q=>{
-    const opts=q[1].map((v,i)=>({v,i}));
-    const mixed=shuffle(opts);
-    return {q:q[0],opts:mixed,correct:mixed.findIndex(x=>x.i===q[2])};
-  });
-  current=0;score=0;answers=[];render();
+
+function chooseMode(n){
+ mode=n;
+ quiz=shuffle(questions).slice(0,n).map(q=>{
+   const opts=shuffle(q[1].map((v,i)=>({v,i})));
+   return {q:q[0],opts,correct:opts.findIndex(x=>x.i===q[2])};
+ });
+ current=0;score=0;answers=[];
+ render();
 }
+
+function home(){
+ document.getElementById("app").innerHTML=`
+ <h1>Trigonometric Ratios Quiz</h1>
+ <div class="sub">30 standard values • sin • cos • tan • cot • sec • cosec</div>
+ <div style="text-align:center;margin:30px 0 15px;font-size:21px;font-weight:800">Choose Quiz Mode</div>
+ <div class="actions" style="flex-direction:column;max-width:420px;margin:0 auto">
+   <button class="next" onclick="chooseMode(10)">10 Questions</button>
+   <button class="next" onclick="chooseMode(30)">All 30 Questions</button>
+ </div>`;
+}
+
 function render(){
  const q=quiz[current];
  document.getElementById("app").innerHTML=`
  <h1>Trigonometric Ratios Quiz</h1>
- <div class="sub">sin • cos • tan • cot • sec • cosec</div>
+ <div class="sub">${mode===10?"10 Questions Mode":"All 30 Questions Mode"}</div>
  <div class="top"><span>Question ${current+1} / ${quiz.length}</span><span>Score: ${score}</span></div>
  <div class="progress"><div class="bar" style="width:${current/quiz.length*100}%"></div></div>
  <div class="question"><span class="math">${q.q}</span> = ?</div>
@@ -82,42 +112,61 @@ function render(){
  <button class="next" id="next" disabled onclick="next()">Next →</button>`;
  selected=false;
 }
+
 function choose(i){
- if(selected)return; selected=true;
+ if(selected)return;
+ selected=true;
  const q=quiz[current],buttons=document.querySelectorAll(".option");
- buttons.forEach((b,n)=>{b.disabled=true;if(n===q.correct)b.classList.add("correct");});
- if(i!==q.correct)buttons[i].classList.add("wrong");else score++;
- answers.push(i===q.correct);
+ buttons.forEach((b,n)=>{
+   b.disabled=true;
+   if(n===q.correct)b.classList.add("correct");
+ });
+ if(i!==q.correct)buttons[i].classList.add("wrong");
+ else score++;
  document.getElementById("next").disabled=false;
 }
-function next(){current++;current<quiz.length?render():result()}
+
+function next(){
+ current++;
+ current<quiz.length ? render() : result();
+}
+
 function result(){
  const pct=Math.round(score/quiz.length*100);
  document.getElementById("app").innerHTML=`
  <div class="result">
  <h1>Quiz Complete!</h1>
+ <div class="sub">${mode===10?"10 Questions Mode":"All 30 Questions Mode"}</div>
  <div class="score">${score}/${quiz.length}</div>
  <div class="badge">${pct}% • ${pct>=90?"Excellent!":pct>=70?"Great work!":pct>=50?"Keep practicing!":"Practice makes progress!"}</div>
  <div class="actions">
   <button class="download" onclick="downloadResult()">⬇ Download Result Image</button>
-  <button class="restart" onclick="start()">↻ Try Again</button>
+  <button class="restart" onclick="chooseMode(mode)">↻ Try Again</button>
+  <button class="restart" onclick="home()">⌂ Quiz Modes</button>
  </div>
  </div>`;
 }
+
 function downloadResult(){
  const c=document.createElement("canvas"),ctx=c.getContext("2d");
  c.width=1200;c.height=700;
- const g=ctx.createLinearGradient(0,0,1200,700);g.addColorStop(0,"#090b1a");g.addColorStop(.5,"#151a38");g.addColorStop(1,"#241047");
+ const g=ctx.createLinearGradient(0,0,1200,700);
+ g.addColorStop(0,"#090b1a");g.addColorStop(.5,"#151a38");g.addColorStop(1,"#241047");
  ctx.fillStyle=g;ctx.fillRect(0,0,c.width,c.height);
  ctx.fillStyle="#fff";ctx.textAlign="center";
  ctx.font="bold 62px Arial";ctx.fillText("Trigonometric Ratios Quiz",600,150);
- ctx.font="bold 110px Arial";ctx.fillText(`${score} / ${quiz.length}`,600,330);
- ctx.font="bold 42px Arial";ctx.fillText(`${Math.round(score/quiz.length*100)}%`,600,420);
- ctx.font="30px Arial";ctx.fillStyle="#c9cce0";ctx.fillText("sin • cos • tan • cot • sec • cosec",600,500);
- ctx.font="24px Arial";ctx.fillText(new Date().toLocaleDateString(),600,590);
- const a=document.createElement("a");a.download="trigonometric-quiz-result.png";a.href=c.toDataURL("image/png");a.click();
+ ctx.font="bold 44px Arial";ctx.fillText(mode===10?"10 Questions Mode":"All 30 Questions Mode",600,220);
+ ctx.font="bold 110px Arial";ctx.fillText(`${score} / ${quiz.length}`,600,360);
+ ctx.font="bold 42px Arial";ctx.fillText(`${Math.round(score/quiz.length*100)}%`,600,440);
+ ctx.font="30px Arial";ctx.fillStyle="#c9cce0";
+ ctx.fillText("sin • cos • tan • cot • sec • cosec",600,525);
+ ctx.font="24px Arial";ctx.fillText(new Date().toLocaleDateString(),600,600);
+ const a=document.createElement("a");
+ a.download="trigonometric-quiz-result.png";
+ a.href=c.toDataURL("image/png");a.click();
 }
-start();
+
+home();
 </script>
 </body>
 </html>
