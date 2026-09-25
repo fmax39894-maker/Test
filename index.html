@@ -4,40 +4,199 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Trigonometric Ratios Quiz</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#090b1a,#151a38,#241047);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.app{width:min(760px,100%);background:rgba(255,255,255,.09);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:28px;box-shadow:0 20px 60px #0008}
-h1{text-align:center;margin:0 0 8px;font-size:clamp(28px,6vw,44px)}
-.sub{text-align:center;color:#c9cce0;margin-bottom:25px}
-.top{display:flex;justify-content:space-between;gap:12px;margin-bottom:18px;color:#d9dcf0;font-weight:700}
-.progress{height:9px;background:#ffffff1c;border-radius:99px;overflow:hidden;margin-bottom:25px}
-.bar{height:100%;width:0;background:linear-gradient(90deg,#ff3cac,#784ba0,#2b86c5);transition:.3s}
-.question{font-size:clamp(24px,5vw,34px);text-align:center;margin:30px 0;font-weight:800}
-.options{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.option{min-height:80px;border:1px solid #ffffff2b;border-radius:17px;background:#ffffff0d;color:#fff;font-size:clamp(22px,4vw,30px);cursor:pointer;transition:.2s}
-.option:hover{transform:translateY(-2px);background:#ffffff18}
-.option:disabled{cursor:default}
-.option.correct{background:#1f9d5b66;border-color:#54e39a}
-.option.wrong{background:#c9365666;border-color:#ff8299}
-.next{width:100%;margin-top:22px;padding:16px;border:0;border-radius:14px;background:linear-gradient(90deg,#ff3cac,#784ba0);color:white;font-size:18px;font-weight:800;cursor:pointer}
-.next:disabled{opacity:.45;cursor:not-allowed}
-.result{text-align:center}
-.score{font-size:64px;font-weight:900;margin:20px}
-.badge{font-size:20px;color:#d7d9e8}
-.actions{display:flex;gap:12px;justify-content:center;margin-top:25px;flex-wrap:wrap}
-.actions button{padding:13px 18px;border:0;border-radius:12px;font-weight:800;cursor:pointer}
-.download{background:#fff;color:#111}
-.restart{background:#ff3cac;color:#fff}
-.math{font-family:"Times New Roman",serif;font-style:italic}
-@media(max-width:560px){.options{grid-template-columns:1fr}.app{padding:20px}.question{margin:22px 0}}
+
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:linear-gradient(135deg,#090b1a,#151a38,#241047);
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px
+}
+
+.app{
+  width:min(760px,100%);
+  background:rgba(255,255,255,.09);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:24px;
+  padding:28px;
+  box-shadow:0 20px 60px #0008
+}
+
+h1{
+  text-align:center;
+  margin:0 0 8px;
+  font-size:clamp(28px,6vw,44px)
+}
+
+.sub{
+  text-align:center;
+  color:#c9cce0;
+  margin-bottom:25px
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+  color:#d9dcf0;
+  font-weight:700
+}
+
+.progress{
+  height:9px;
+  background:#ffffff1c;
+  border-radius:99px;
+  overflow:hidden;
+  margin-bottom:25px
+}
+
+.bar{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#ff3cac,#784ba0,#2b86c5);
+  transition:.3s
+}
+
+.question{
+  font-size:clamp(24px,5vw,34px);
+  text-align:center;
+  margin:30px 0;
+  font-weight:800
+}
+
+.options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px
+}
+
+.option{
+  min-height:80px;
+  border:1px solid #ffffff2b;
+  border-radius:17px;
+  background:#ffffff0d;
+  color:#fff;
+  font-size:clamp(22px,4vw,30px);
+  cursor:pointer;
+  transition:.2s
+}
+
+.option:hover{
+  transform:translateY(-2px);
+  background:#ffffff18
+}
+
+.option:disabled{
+  cursor:default
+}
+
+.option.correct{
+  background:#1f9d5b66;
+  border-color:#54e39a
+}
+
+.option.wrong{
+  background:#c9365666;
+  border-color:#ff8299
+}
+
+.next{
+  width:100%;
+  margin-top:22px;
+  padding:16px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(90deg,#ff3cac,#784ba0);
+  color:white;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer
+}
+
+.next:disabled{
+  opacity:.45;
+  cursor:not-allowed
+}
+
+.result{
+  text-align:center
+}
+
+.score{
+  font-size:64px;
+  font-weight:900;
+  margin:20px
+}
+
+.badge{
+  font-size:20px;
+  color:#d7d9e8
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin-top:25px;
+  flex-wrap:wrap
+}
+
+.actions button{
+  padding:13px 18px;
+  border:0;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer
+}
+
+.download{
+  background:#fff;
+  color:#111
+}
+
+.restart{
+  background:#ff3cac;
+  color:#fff
+}
+
+.math{
+  font-family:"Times New Roman",serif;
+  font-style:italic
+}
+
+@media(max-width:560px){
+  .options{
+    grid-template-columns:1fr
+  }
+
+  .app{
+    padding:20px
+  }
+
+  .question{
+    margin:22px 0
+  }
+}
 </style>
 </head>
+
 <body>
+
 <div class="app" id="app"></div>
 
 <script>
+
 const questions=[
+
 ["sin 0°",["0","1/2","1/√2","1"],0],
 ["sin 30°",["1/2","√3/2","1/√2","1"],0],
 ["sin 45°",["1/2","√3/2","1/√2","1"],2],
@@ -73,100 +232,460 @@ const questions=[
 ["cosec 45°",["1","√2","2","√3"],1],
 ["cosec 60°",["2","2/√3","√3","1"],1],
 ["cosec 90°",["0","1","√2","Undefined"],1]
+
 ];
 
-let quiz=[],current=0,score=0,selected=false,mode=10;
+let quiz=[];
+let current=0;
+let score=0;
+let selected=false;
+let mode=10;
+let answers=[];
 
-function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+
+function shuffle(a){
+  return [...a].sort(()=>Math.random()-.5);
+}
+
 
 function chooseMode(n){
- mode=n;
- quiz=shuffle(questions).slice(0,n).map(q=>{
-   const opts=shuffle(q[1].map((v,i)=>({v,i})));
-   return {q:q[0],opts,correct:opts.findIndex(x=>x.i===q[2])};
- });
- current=0;score=0;answers=[];
- render();
+
+  mode=n;
+
+  quiz=shuffle(questions)
+    .slice(0,n)
+    .map(q=>{
+
+      const opts=shuffle(
+        q[1].map((v,i)=>({v,i}))
+      );
+
+      return{
+        q:q[0],
+        opts,
+        correct:opts.findIndex(x=>x.i===q[2])
+      };
+
+    });
+
+  current=0;
+  score=0;
+  answers=[];
+
+  render();
 }
+
 
 function home(){
- document.getElementById("app").innerHTML=`
- <h1>Trigonometric Ratios Quiz</h1>
- <div class="sub">30 standard values • sin • cos • tan • cot • sec • cosec</div>
- <div style="text-align:center;margin:30px 0 15px;font-size:21px;font-weight:800">Choose Quiz Mode</div>
- <div class="actions" style="flex-direction:column;max-width:420px;margin:0 auto">
-   <button class="next" onclick="chooseMode(10)">10 Questions</button>
-   <button class="next" onclick="chooseMode(30)">All 30 Questions</button>
- </div>`;
+
+  document.getElementById("app").innerHTML=`
+
+    <h1>Trigonometric Ratios Quiz</h1>
+
+    <div class="sub">
+      30 standard values • sin • cos • tan • cot • sec • cosec
+    </div>
+
+    <div style="
+      text-align:center;
+      margin:30px 0 15px;
+      font-size:21px;
+      font-weight:800
+    ">
+      Choose Quiz Mode
+    </div>
+
+    <div class="actions"
+         style="
+           flex-direction:column;
+           max-width:420px;
+           margin:0 auto
+         ">
+
+      <button class="next"
+              onclick="chooseMode(10)">
+        10 Questions
+      </button>
+
+      <button class="next"
+              onclick="chooseMode(30)">
+        All 30 Questions
+      </button>
+
+    </div>
+  `;
 }
+
 
 function render(){
- const q=quiz[current];
- document.getElementById("app").innerHTML=`
- <h1>Trigonometric Ratios Quiz</h1>
- <div class="sub">${mode===10?"10 Questions Mode":"All 30 Questions Mode"}</div>
- <div class="top"><span>Question ${current+1} / ${quiz.length}</span><span>Score: ${score}</span></div>
- <div class="progress"><div class="bar" style="width:${current/quiz.length*100}%"></div></div>
- <div class="question"><span class="math">${q.q}</span> = ?</div>
- <div class="options">${q.opts.map((o,i)=>`<button class="option math" onclick="choose(${i})">${o.v}</button>`).join("")}</div>
- <button class="next" id="next" disabled onclick="next()">Next →</button>`;
- selected=false;
+
+  const q=quiz[current];
+
+  document.getElementById("app").innerHTML=`
+
+    <h1>Trigonometric Ratios Quiz</h1>
+
+    <div class="sub">
+      ${mode===10
+        ?"10 Questions Mode"
+        :"All 30 Questions Mode"}
+    </div>
+
+    <div class="top">
+
+      <span>
+        Question ${current+1} / ${quiz.length}
+      </span>
+
+      <span>
+        Score: ${score}
+      </span>
+
+    </div>
+
+    <div class="progress">
+
+      <div
+        class="bar"
+        style="width:${current/quiz.length*100}%">
+      </div>
+
+    </div>
+
+    <div class="question">
+
+      <span class="math">
+        ${q.q}
+      </span>
+
+      = ?
+
+    </div>
+
+    <div class="options">
+
+      ${q.opts.map((o,i)=>`
+
+        <button
+          class="option math"
+          onclick="choose(${i})">
+
+          ${o.v}
+
+        </button>
+
+      `).join("")}
+
+    </div>
+
+    <button
+      class="next"
+      id="next"
+      disabled
+      onclick="next()">
+
+      Next →
+
+    </button>
+
+  `;
+
+  selected=false;
 }
+
 
 function choose(i){
- if(selected)return;
- selected=true;
- const q=quiz[current],buttons=document.querySelectorAll(".option");
- buttons.forEach((b,n)=>{
-   b.disabled=true;
-   if(n===q.correct)b.classList.add("correct");
- });
- if(i!==q.correct)buttons[i].classList.add("wrong");
- else score++;
- document.getElementById("next").disabled=false;
+
+  if(selected)return;
+
+  selected=true;
+
+  const q=quiz[current];
+
+  const buttons=document.querySelectorAll(".option");
+
+  buttons.forEach((b,n)=>{
+
+    b.disabled=true;
+
+    if(n===q.correct){
+      b.classList.add("correct");
+    }
+
+  });
+
+  if(i!==q.correct){
+
+    buttons[i].classList.add("wrong");
+
+  }else{
+
+    score++;
+
+  }
+
+  document.getElementById("next").disabled=false;
 }
+
 
 function next(){
- current++;
- current<quiz.length ? render() : result();
+
+  current++;
+
+  if(current<quiz.length){
+
+    render();
+
+  }else{
+
+    result();
+
+  }
+
 }
+
 
 function result(){
- const pct=Math.round(score/quiz.length*100);
- document.getElementById("app").innerHTML=`
- <div class="result">
- <h1>Quiz Complete!</h1>
- <div class="sub">${mode===10?"10 Questions Mode":"All 30 Questions Mode"}</div>
- <div class="score">${score}/${quiz.length}</div>
- <div class="badge">${pct}% • ${pct>=90?"Excellent!":pct>=70?"Great work!":pct>=50?"Keep practicing!":"Practice makes progress!"}</div>
- <div class="actions">
-  <button class="download" onclick="downloadResult()">⬇ Download Result Image</button>
-  <button class="restart" onclick="chooseMode(mode)">↻ Try Again</button>
-  <button class="restart" onclick="home()">⌂ Quiz Modes</button>
- </div>
- </div>`;
+
+  const pct=Math.round(
+    score/quiz.length*100
+  );
+
+  document.getElementById("app").innerHTML=`
+
+    <div class="result">
+
+      <h1>Quiz Complete!</h1>
+
+      <div class="sub">
+        ${mode===10
+          ?"10 Questions Mode"
+          :"All 30 Questions Mode"}
+      </div>
+
+      <div class="score">
+        ${score}/${quiz.length}
+      </div>
+
+      <div class="badge">
+
+        ${pct}% •
+        ${
+          pct>=90
+            ?"Excellent!"
+            :pct>=70
+              ?"Great work!"
+              :pct>=50
+                ?"Keep practicing!"
+                :"Practice makes progress!"
+        }
+
+      </div>
+
+      <div class="actions">
+
+        <button
+          class="download"
+          onclick="downloadResult()">
+
+          ⬇ Download Result Image
+
+        </button>
+
+        <button
+          class="restart"
+          onclick="chooseMode(mode)">
+
+          ↻ Try Again
+
+        </button>
+
+        <button
+          class="restart"
+          onclick="home()">
+
+          ⌂ Quiz Modes
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
 }
+
+
+/* =====================================================
+   FIXED DOWNLOAD FUNCTION
+   File will be downloaded as:
+   result.png
+   ===================================================== */
 
 function downloadResult(){
- const c=document.createElement("canvas"),ctx=c.getContext("2d");
- c.width=1200;c.height=700;
- const g=ctx.createLinearGradient(0,0,1200,700);
- g.addColorStop(0,"#090b1a");g.addColorStop(.5,"#151a38");g.addColorStop(1,"#241047");
- ctx.fillStyle=g;ctx.fillRect(0,0,c.width,c.height);
- ctx.fillStyle="#fff";ctx.textAlign="center";
- ctx.font="bold 62px Arial";ctx.fillText("Trigonometric Ratios Quiz",600,150);
- ctx.font="bold 44px Arial";ctx.fillText(mode===10?"10 Questions Mode":"All 30 Questions Mode",600,220);
- ctx.font="bold 110px Arial";ctx.fillText(`${score} / ${quiz.length}`,600,360);
- ctx.font="bold 42px Arial";ctx.fillText(`${Math.round(score/quiz.length*100)}%`,600,440);
- ctx.font="30px Arial";ctx.fillStyle="#c9cce0";
- ctx.fillText("sin • cos • tan • cot • sec • cosec",600,525);
- ctx.font="24px Arial";ctx.fillText(new Date().toLocaleDateString(),600,600);
- const a=document.createElement("a");
- a.download="trigonometric-quiz-result.png";
- a.href=c.toDataURL("image/png");a.click();
+
+  const c=document.createElement("canvas");
+
+  const ctx=c.getContext("2d");
+
+  c.width=1200;
+  c.height=700;
+
+
+  /* Background */
+
+  const g=ctx.createLinearGradient(
+    0,0,1200,700
+  );
+
+  g.addColorStop(0,"#090b1a");
+  g.addColorStop(.5,"#151a38");
+  g.addColorStop(1,"#241047");
+
+  ctx.fillStyle=g;
+
+  ctx.fillRect(
+    0,
+    0,
+    c.width,
+    c.height
+  );
+
+
+  /* Text */
+
+  ctx.fillStyle="#fff";
+
+  ctx.textAlign="center";
+
+
+  ctx.font="bold 62px Arial";
+
+  ctx.fillText(
+    "Trigonometric Ratios Quiz",
+    600,
+    150
+  );
+
+
+  ctx.font="bold 44px Arial";
+
+  ctx.fillText(
+    mode===10
+      ?"10 Questions Mode"
+      :"All 30 Questions Mode",
+    600,
+    220
+  );
+
+
+  ctx.font="bold 110px Arial";
+
+  ctx.fillText(
+    `${score} / ${quiz.length}`,
+    600,
+    360
+  );
+
+
+  ctx.font="bold 42px Arial";
+
+  ctx.fillText(
+    `${Math.round(score/quiz.length*100)}%`,
+    600,
+    440
+  );
+
+
+  ctx.font="30px Arial";
+
+  ctx.fillStyle="#c9cce0";
+
+  ctx.fillText(
+    "sin • cos • tan • cot • sec • cosec",
+    600,
+    525
+  );
+
+
+  ctx.font="24px Arial";
+
+  ctx.fillText(
+    new Date().toLocaleDateString(),
+    600,
+    600
+  );
+
+
+  /*
+     IMPORTANT:
+     Convert canvas to Blob instead of using
+     canvas.toDataURL().
+
+     This prevents browsers/webviews from
+     naming the downloaded file "base64.png".
+  */
+
+  c.toBlob(function(blob){
+
+    if(!blob){
+
+      alert("Unable to create result image.");
+
+      return;
+
+    }
+
+
+    /*
+       Create a temporary Blob URL
+    */
+
+    const url=URL.createObjectURL(blob);
+
+
+    /*
+       Create download link
+    */
+
+    const a=document.createElement("a");
+
+    a.href=url;
+
+    a.download="result.png";
+
+    a.style.display="none";
+
+    document.body.appendChild(a);
+
+
+    /*
+       Trigger download
+    */
+
+    a.click();
+
+
+    /*
+       Remove temporary element
+    */
+
+    setTimeout(()=>{
+
+      document.body.removeChild(a);
+
+      URL.revokeObjectURL(url);
+
+    },1000);
+
+  },"image/png");
+
 }
 
+
 home();
+
 </script>
+
 </body>
 </html>
