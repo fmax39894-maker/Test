@@ -2,461 +2,122 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chemistry Quiz — Reactivity Series</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Trigonometric Ratios Quiz</title>
 <style>
-  * { box-sizing: border-box; }
-  :root{
-    --bg1:#08111f; --bg2:#102a43; --card:rgba(255,255,255,.10);
-    --line:rgba(255,255,255,.18); --text:#f7fbff; --muted:#b8c7d8;
-    --accent:#65e572; --accent2:#27c6ff; --danger:#ff6174;
-  }
-  body{
-    margin:0; min-height:100vh; color:var(--text);
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    background:
-      radial-gradient(circle at 15% 10%, rgba(39,198,255,.18), transparent 30%),
-      radial-gradient(circle at 85% 15%, rgba(101,229,114,.14), transparent 28%),
-      linear-gradient(145deg,var(--bg1),var(--bg2));
-    overflow-x:hidden;
-  }
-  .wrap{width:min(1200px,94vw);margin:auto;padding:22px 0 50px}
-  header{
-    display:flex;justify-content:space-between;align-items:center;gap:18px;
-    margin-bottom:18px
-  }
-  .brand h1{margin:0;font-size:clamp(28px,5vw,48px);letter-spacing:-1.5px}
-  .brand p{margin:5px 0 0;color:var(--muted)}
-  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-  .stat{
-    min-width:100px;padding:10px 14px;border:1px solid var(--line);
-    border-radius:16px;background:rgba(255,255,255,.07);text-align:center;
-    backdrop-filter:blur(12px)
-  }
-  .stat b{display:block;font-size:20px}.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-  .series-card{
-    position:relative; padding:18px; border:1px solid var(--line); border-radius:24px;
-    background:var(--card);backdrop-filter:blur(16px);box-shadow:0 20px 70px rgba(0,0,0,.25)
-  }
-  .series-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
-  .series-head h2{font-size:16px;margin:0}.series-head span{color:var(--muted);font-size:13px}
-  .slots{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:thin}
-  .slots::-webkit-scrollbar{height:6px}.slots::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:20px}
-  .slot{
-    flex:0 0 70px;min-height:66px;border:1px dashed rgba(255,255,255,.2);border-radius:14px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    color:#8fa4b9;font-size:12px;transition:.25s;
-  }
-  .slot.filled{border-style:solid;border-color:rgba(101,229,114,.6);background:rgba(101,229,114,.12);color:#fff;transform:translateY(-2px)}
-  .slot .symbol{font-size:19px;font-weight:800;color:var(--accent)}
-  .slot .name{font-size:10px;margin-top:3px;white-space:nowrap}
-  .game{
-    position:relative;min-height:560px;margin-top:18px;overflow:hidden;border-radius:26px;
-    border:1px solid var(--line);background:
-      radial-gradient(circle at 50% 45%,rgba(39,198,255,.07),transparent 35%),
-      rgba(0,0,0,.13);
-  }
-  .start-screen{
-    position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;
-    background:rgba(3,12,24,.58);backdrop-filter:blur(5px);transition:.35s
-  }
-  .start-screen.hidden{opacity:0;pointer-events:none}
-  .start-btn{
-    position:relative;border:0;cursor:pointer;color:#06101a;font-size:20px;font-weight:900;
-    padding:18px 42px;border-radius:20px;background:linear-gradient(135deg,#65e572,#b4ff91);
-    box-shadow:0 0 0 0 rgba(101,229,114,.5),0 16px 40px rgba(0,0,0,.35);
-    animation:startPulse 1.7s infinite;transition:.2s
-  }
-  .start-btn:hover{transform:scale(1.06)}
-  .start-btn:active{transform:scale(.96)}
-  @keyframes startPulse{
-    0%,100%{box-shadow:0 0 0 0 rgba(101,229,114,.45),0 16px 40px rgba(0,0,0,.35)}
-    50%{box-shadow:0 0 0 16px rgba(101,229,114,0),0 18px 45px rgba(0,0,0,.4)}
-  }
-  .instruction{
-    position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:4;
-    width:min(650px,90%);text-align:center;padding:11px 16px;border-radius:14px;
-    background:rgba(4,13,25,.72);border:1px solid var(--line);color:#dce8f5;font-size:14px
-  }
-  .hint{color:var(--accent)}
-  .element{
-    position:absolute;z-index:3;border:0;cursor:pointer;color:white;
-    min-width:92px;padding:13px 13px;border-radius:18px;
-    background:linear-gradient(145deg,rgba(54,78,103,.96),rgba(24,42,62,.96));
-    border:1px solid rgba(255,255,255,.18);box-shadow:0 12px 26px rgba(0,0,0,.32);
-    transition:transform .16s,box-shadow .16s;
-    user-select:none
-  }
-  .element:hover{transform:scale(1.08);box-shadow:0 16px 34px rgba(0,0,0,.42)}
-  .element .sym{font-size:25px;font-weight:900;display:block;color:#fff}
-  .element .nm{font-size:11px;color:#c8d6e4;display:block;margin-top:2px}
-  .element.correct-pop{animation:pop .45s ease}
-  .element.wrong{animation:shake .42s ease;border-color:var(--danger);box-shadow:0 0 0 4px rgba(255,97,116,.14),0 12px 26px rgba(0,0,0,.32)}
-  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-7px)}80%{transform:translateX(6px)}}
-  @keyframes pop{50%{transform:scale(1.18) rotate(-2deg)}}
-  .bottom{
-    display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:14px;
-    color:var(--muted);font-size:13px
-  }
-  button.action{
-    border:0;border-radius:13px;padding:11px 16px;font-weight:800;cursor:pointer;
-    color:#06101a;background:linear-gradient(135deg,var(--accent),#b4ff91);
-  }
-  .hidden{display:none!important}
-  .overlay{
-    position:fixed;inset:0;z-index:20;background:rgba(2,8,16,.78);backdrop-filter:blur(10px);
-    display:flex;align-items:center;justify-content:center;padding:20px
-  }
-  .winner{
-    width:min(520px,94vw);padding:34px;border-radius:30px;text-align:center;
-    background:linear-gradient(150deg,#142a40,#0b1728);border:1px solid rgba(101,229,114,.5);
-    box-shadow:0 30px 100px rgba(0,0,0,.5)
-  }
-  .trophy{font-size:54px;margin-bottom:5px}.winner h2{font-size:38px;margin:0 0 8px}
-  .winner p{color:var(--muted);margin:0 0 22px}
-  .result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px}
-  .result{padding:15px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
-  .result b{display:block;font-size:25px}.result span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-  .winner-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  .secondary{background:rgba(255,255,255,.09)!important;color:white!important;border:1px solid var(--line)!important}
-  #download{position:relative;overflow:hidden;animation:downloadGlow 1.8s ease-in-out infinite}
-  #download::after{
-    content:"";position:absolute;top:-70%;left:-35%;width:28%;height:240%;
-    background:rgba(255,255,255,.45);transform:rotate(25deg);animation:downloadSweep 2.2s linear infinite;
-    pointer-events:none
-  }
-  @keyframes downloadGlow{
-    0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(101,229,114,.35)}
-    50%{transform:scale(1.035);box-shadow:0 0 0 9px rgba(101,229,114,0)}
-  }
-  @keyframes downloadSweep{0%{left:-40%}55%,100%{left:130%}}
-  .toast{
-    position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:30;
-    padding:11px 16px;border-radius:14px;background:#111d2d;border:1px solid var(--line);transition:.25s;
-    pointer-events:none
-  }
-  .toast.show{opacity:1;transform:translate(-50%,0)}
-  @media(max-width:850px){
-    .game{min-height:650px}
-  }
-  @media(max-width:520px){
-    header{align-items:flex-start;flex-direction:column}
-    .stats{justify-content:flex-start}
-    .game{min-height:760px}
-    .element{min-width:0;padding:10px 6px;border-radius:16px}
-    .element .sym{font-size:21px}
-    .element .nm{font-size:10px}
-    .bottom{align-items:flex-start;flex-direction:column}
-  }
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#090b1a,#151a38,#241047);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.app{width:min(760px,100%);background:rgba(255,255,255,.09);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:28px;box-shadow:0 20px 60px #0008}
+h1{text-align:center;margin:0 0 8px;font-size:clamp(28px,6vw,44px)}
+.sub{text-align:center;color:#c9cce0;margin-bottom:25px}
+.top{display:flex;justify-content:space-between;gap:12px;margin-bottom:18px;color:#d9dcf0;font-weight:700}
+.progress{height:9px;background:#ffffff1c;border-radius:99px;overflow:hidden;margin-bottom:25px}
+.bar{height:100%;width:0;background:linear-gradient(90deg,#ff3cac,#784ba0,#2b86c5);transition:.3s}
+.question{font-size:clamp(24px,5vw,34px);text-align:center;margin:30px 0;font-weight:800}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.option{min-height:80px;border:1px solid #ffffff2b;border-radius:17px;background:#ffffff0d;color:#fff;font-size:clamp(22px,4vw,30px);cursor:pointer;transition:.2s}
+.option:hover{transform:translateY(-2px);background:#ffffff18}
+.option:disabled{cursor:default}
+.option.correct{background:#1f9d5b66;border-color:#54e39a}
+.option.wrong{background:#c9365666;border-color:#ff8299}
+.next{width:100%;margin-top:22px;padding:16px;border:0;border-radius:14px;background:linear-gradient(90deg,#ff3cac,#784ba0);color:white;font-size:18px;font-weight:800;cursor:pointer}
+.next:disabled{opacity:.45;cursor:not-allowed}
+.result{text-align:center}
+.score{font-size:64px;font-weight:900;margin:20px}
+.badge{font-size:20px;color:#d7d9e8}
+.actions{display:flex;gap:12px;justify-content:center;margin-top:25px;flex-wrap:wrap}
+.actions button{padding:13px 18px;border:0;border-radius:12px;font-weight:800;cursor:pointer}
+.download{background:#fff;color:#111}
+.restart{background:#ff3cac;color:#fff}
+.math{font-family:"Times New Roman",serif;font-style:italic}
+@media(max-width:560px){.options{grid-template-columns:1fr}.app{padding:20px}.question{margin:22px 0}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <h1>⚗️ Chemistry Quiz</h1>
-      <p>Arrange the metals from <b>highest → lowest reactivity</b>.</p>
-    </div>
-    <div class="stats">
-      <div class="stat"><b id="time">0.0s</b><span>Time</span></div>
-      <div class="stat"><b id="tries">0</b><span>Tries</span></div>
-      <div class="stat"><b id="placed">0/13</b><span>Progress</span></div>
-    </div>
-  </header>
-
-  <section class="series-card">
-    <div class="series-head">
-      <h2>Reactivity Series</h2>
-      <span>Most reactive → Least reactive</span>
-    </div>
-    <div class="slots" id="slots"></div>
-  </section>
-
-  <section class="game" id="game">
-    <div class="start-screen" id="startScreen">
-      <button class="start-btn" id="startBtn">▶ START QUIZ</button>
-    </div>
-    <div class="instruction">
-      Click the <span class="hint">next most reactive metal</span>. Wrong choices will vibrate.
-    </div>
-  </section>
-
-  <div class="bottom">
-    <span>Use the supplied reactivity series: K, Na, Ca, Mg, Al, Zn, Fe, Pb, H, Cu, Hg, Ag, Au, Pt.</span>
-    <button class="action" id="restart">Restart Game</button>
-  </div>
-</div>
-
-<div class="overlay hidden" id="overlay">
-  <div class="winner">
-    <div class="trophy">🏆</div>
-    <h2>Winner!</h2>
-    <p>You completed the Chemistry Quiz.</p>
-    <div class="result-grid">
-      <div class="result"><b id="finalTime">0.0s</b><span>Time Taken</span></div>
-      <div class="result"><b id="finalTries">0</b><span>No. of Tries</span></div>
-      <div class="result"><b>13 / 13</b><span>Correct Order</span></div>
-      <div class="result"><b id="accuracy">100%</b><span>Accuracy</span></div>
-    </div>
-    <div class="winner-actions">
-      <button class="action" id="download">⬇ Download Winner Image</button>
-      <button class="action secondary" id="playAgain">Play Again</button>
-    </div>
-  </div>
-</div>
-<div class="toast" id="toast">Try again!</div>
+<div class="app" id="app"></div>
 
 <script>
-const metals = [
-  ["K","Potassium"],["Na","Sodium"],["Ca","Calcium"],["Mg","Magnesium"],
-  ["Al","Aluminium"],["Zn","Zinc"],["Fe","Iron"],["Pb","Lead"],
-  ["H","Hydrogen"],["Cu","Copper"],["Hg","Mercury"],["Ag","Silver"],["Au","Gold"]
+const questions=[
+["sin 30°",["1/2","√3/2","1/√2","1"],0],
+["cos 60°",["√3/2","1/2","1/√2","0"],1],
+["tan 45°",["0","1/√3","1","√3"],2],
+["cot 30°",["1/√3","1","√3","0"],2],
+["sec 60°",["2","1/2","2/√3","1"],0],
+["cosec 30°",["1/2","2","2/√3","1"],1],
+["cos 0°",["0","1/2","1","√3/2"],2],
+["sin 90°",["0","1/√2","√3/2","1"],3],
+["tan 60°",["1/√3","1","√3","0"],2],
+["sec 0°",["0","1","2","2/√3"],1],
+["cosec 90°",["1/2","1","√3/2","0"],1],
+["sin 60°",["1/2","√3/2","1/√2","1"],1],
+["cos 30°",["1/2","√3/2","1/√2","1"],1],
+["tan 30°",["√3","1","1/√3","0"],2],
+["cot 60°",["√3","1/√3","1","0"],1],
+["sec 30°",["2","2/√3","√3","1"],1],
+["cosec 60°",["2","2/√3","√3","1"],1],
+["sin 0°",["0","1/2","1/√2","1"],0],
+["cot 90°",["0","1","√3","undefined"],0],
+["tan 0°",["0","1","1/√3","√3"],0]
 ];
-// Platinum is shown in the source image; keep the full series at 14 entries.
-metals.push(["Pt","Platinum"]);
 
-let order = metals.map((_,i)=>i);
-let placed = 0, tries = 0, start = null, timer = null, finished = false, quizStarted = false;
-const game = document.getElementById("game");
-const slots = document.getElementById("slots");
-
-function initSlots(){
-  slots.innerHTML = "";
-  metals.forEach((_,i)=>{
-    const s = document.createElement("div");
-    s.className = "slot";
-    s.id = "slot-"+i;
-    s.innerHTML = `<span>${i+1}</span>`;
-    slots.appendChild(s);
+let quiz=[],current=0,score=0,selected=false,answers=[];
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function start(){
+  quiz=shuffle(questions).slice(0,15).map(q=>{
+    const opts=q[1].map((v,i)=>({v,i}));
+    const mixed=shuffle(opts);
+    return {q:q[0],opts:mixed,correct:mixed.findIndex(x=>x.i===q[2])};
   });
+  current=0;score=0;answers=[];render();
 }
-
-function arrangeButtons(){
-  const buttons = [...game.querySelectorAll(".element")];
-  const rect = game.getBoundingClientRect();
-  const padX = 18, top = 95, gapX = 18, gapY = 22;
-  const cols = Math.min(4, Math.max(2, Math.floor((rect.width - padX*2 + gapX) / (110 + gapX))));
-  const rows = Math.ceil(buttons.length / cols);
-  const bw = Math.min(104, Math.max(82, (rect.width - padX*2 - gapX*(cols-1)) / cols));
-  const bh = 74;
-
-  // Create safe grid cells, then shuffle the cells so the cards are NOT
-  // spatially arranged in reactivity order. Cards still never overlap.
-  const cells = [];
-  for(let r=0;r<rows;r++){
-    const rowCount = Math.min(cols, buttons.length-r*cols);
-    const rowW = rowCount*bw + (rowCount-1)*gapX;
-    const rowStart = (rect.width-rowW)/2;
-    for(let c=0;c<rowCount;c++){
-      cells.push({
-        x: rowStart + c*(bw+gapX),
-        y: top + r*(bh+gapY)
-      });
-    }
-  }
-
-  for(let i=cells.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [cells[i],cells[j]]=[cells[j],cells[i]];
-  }
-
-  buttons.forEach((btn,index)=>{
-    btn.style.width = bw+"px";
-    btn.style.left = cells[index].x+"px";
-    btn.style.top = cells[index].y+"px";
-  });
-
-  const needed = top + rows*bh + Math.max(0,rows-1)*gapY + 28;
-  game.style.minHeight = Math.max(560, needed) + "px";
+function render(){
+ const q=quiz[current];
+ document.getElementById("app").innerHTML=`
+ <h1>Trigonometric Ratios Quiz</h1>
+ <div class="sub">sin • cos • tan • cot • sec • cosec</div>
+ <div class="top"><span>Question ${current+1} / ${quiz.length}</span><span>Score: ${score}</span></div>
+ <div class="progress"><div class="bar" style="width:${current/quiz.length*100}%"></div></div>
+ <div class="question"><span class="math">${q.q}</span> = ?</div>
+ <div class="options">${q.opts.map((o,i)=>`<button class="option math" onclick="choose(${i})">${o.v}</button>`).join("")}</div>
+ <button class="next" id="next" disabled onclick="next()">Next →</button>`;
+ selected=false;
 }
-
-function makeButtons(){
-  [...game.querySelectorAll(".element")].forEach(x=>x.remove());
-  metals.forEach((m,i)=>{
-    const b = document.createElement("button");
-    b.className = "element";
-    b.dataset.i = i;
-    b.innerHTML = `<span class="sym">${m[0]}</span><span class="nm">${m[1]}</span>`;
-    b.addEventListener("click", ()=>pick(i,b));
-    game.appendChild(b);
-  });
-  requestAnimationFrame(arrangeButtons);
+function choose(i){
+ if(selected)return; selected=true;
+ const q=quiz[current],buttons=document.querySelectorAll(".option");
+ buttons.forEach((b,n)=>{b.disabled=true;if(n===q.correct)b.classList.add("correct");});
+ if(i!==q.correct)buttons[i].classList.add("wrong");else score++;
+ answers.push(i===q.correct);
+ document.getElementById("next").disabled=false;
 }
-
-function updateStats(){
-  document.getElementById("tries").textContent = tries;
-  document.getElementById("placed").textContent = placed+"/"+metals.length;
+function next(){current++;current<quiz.length?render():result()}
+function result(){
+ const pct=Math.round(score/quiz.length*100);
+ document.getElementById("app").innerHTML=`
+ <div class="result">
+ <h1>Quiz Complete!</h1>
+ <div class="score">${score}/${quiz.length}</div>
+ <div class="badge">${pct}% • ${pct>=90?"Excellent!":pct>=70?"Great work!":pct>=50?"Keep practicing!":"Practice makes progress!"}</div>
+ <div class="actions">
+  <button class="download" onclick="downloadResult()">⬇ Download Result Image</button>
+  <button class="restart" onclick="start()">↻ Try Again</button>
+ </div>
+ </div>`;
 }
-
-function startTimer(){
-  if(start) return;
-  start = performance.now();
-  timer = setInterval(()=>{
-    document.getElementById("time").textContent = ((performance.now()-start)/1000).toFixed(1)+"s";
-  },100);
-}
-
-function vibrate(){
-  if(navigator.vibrate) navigator.vibrate([70,40,70]);
-}
-
-function toast(){
-  const t=document.getElementById("toast");
-  t.classList.add("show");
-  clearTimeout(window.toastTimer);
-  window.toastTimer=setTimeout(()=>t.classList.remove("show"),700);
-}
-
-function pick(i,b){
-  if(finished || !quizStarted) return;
-  startTimer();
-  tries++;
-  const expected = order[placed];
-  if(i !== expected){
-    b.classList.remove("wrong"); void b.offsetWidth; b.classList.add("wrong");
-    vibrate(); toast(); updateStats(); return;
-  }
-
-  b.classList.add("correct-pop");
-  setTimeout(()=>b.remove(),250);
-  const slot = document.getElementById("slot-"+placed);
-  slot.classList.add("filled");
-  slot.innerHTML = `<span class="symbol">${metals[i][0]}</span><span class="name">${metals[i][1]}</span>`;
-  placed++;
-  updateStats();
-
-  if(placed === metals.length){
-    finish();
-  }
-}
-
-function finish(){
-  finished=true; clearInterval(timer);
-  const seconds=(performance.now()-start)/1000;
-  document.getElementById("finalTime").textContent=seconds.toFixed(1)+"s";
-  document.getElementById("finalTries").textContent=tries;
-  document.getElementById("accuracy").textContent=Math.round((metals.length/tries)*100)+"%";
-  document.getElementById("overlay").classList.remove("hidden");
-}
-
-
-function beginQuiz(){
-  if(quizStarted) return;
-  quizStarted = true;
-  start = performance.now();
-  document.getElementById("startScreen").classList.add("hidden");
-  document.getElementById("time").textContent = "0.0s";
-  timer = setInterval(()=>{
-    document.getElementById("time").textContent =
-      ((performance.now()-start)/1000).toFixed(1)+"s";
-  },100);
-}
-
-function reset(){
-  finished=false; quizStarted=false; placed=0; tries=0; start=null; clearInterval(timer);
-  document.getElementById("time").textContent="0.0s";
-  document.getElementById("startScreen").classList.remove("hidden");
-  updateStats(); initSlots(); makeButtons();
-  document.getElementById("overlay").classList.add("hidden");
-}
-
 function downloadResult(){
-  const time = document.getElementById("finalTime").textContent;
-  const tr = document.getElementById("finalTries").textContent;
-  const acc = document.getElementById("accuracy").textContent;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = 1200;
-  canvas.height = 800;
-  const ctx = canvas.getContext("2d");
-
-  // Background
-  const bg = ctx.createLinearGradient(0,0,1200,800);
-  bg.addColorStop(0,"#08111f");
-  bg.addColorStop(1,"#163754");
-  ctx.fillStyle = bg;
-  ctx.fillRect(0,0,1200,800);
-
-  // Decorative glow
-  const glow = ctx.createRadialGradient(600,190,20,600,190,360);
-  glow.addColorStop(0,"rgba(101,229,114,.22)");
-  glow.addColorStop(1,"rgba(101,229,114,0)");
-  ctx.fillStyle = glow;
-  ctx.fillRect(0,0,1200,800);
-
-  // Card
-  ctx.fillStyle = "rgba(10,25,42,.94)";
-  roundRect(ctx,110,75,980,650,34);
-  ctx.fill();
-  ctx.strokeStyle = "rgba(101,229,114,.55)";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  ctx.textAlign="center";
-  ctx.fillStyle="#65e572";
-  ctx.font="bold 72px Arial";
-  ctx.fillText("🏆",600,175);
-
-  ctx.fillStyle="#ffffff";
-  ctx.font="bold 64px Arial";
-  ctx.fillText("WINNER!",600,260);
-
-  ctx.fillStyle="#b8c7d8";
-  ctx.font="28px Arial";
-  ctx.fillText("CHEMISTRY QUIZ",600,310);
-  ctx.font="22px Arial";
-  ctx.fillText("Reactivity Series Challenge",600,345);
-
-  const cards=[
-    ["TIME TAKEN",time],
-    ["NO. OF TRIES",tr],
-    ["CORRECT ORDER","14 / 14"],
-    ["ACCURACY",acc]
-  ];
-  cards.forEach((item,i)=>{
-    const x = 165 + (i%2)*455;
-    const y = 395 + Math.floor(i/2)*125;
-    ctx.fillStyle="rgba(255,255,255,.07)";
-    roundRect(ctx,x,y,410,100,18); ctx.fill();
-    ctx.fillStyle="#b8c7d8";
-    ctx.font="16px Arial";
-    ctx.fillText(item[0],x+205,y+30);
-    ctx.fillStyle="#65e572";
-    ctx.font="bold 31px Arial";
-    ctx.fillText(item[1],x+205,y+70);
-  });
-
-  ctx.fillStyle="#8fa4b9";
-  ctx.font="18px Arial";
-  ctx.fillText("K → Na → Ca → Mg → Al → Zn → Fe → Pb → H → Cu → Hg → Ag → Au → Pt",600,675);
-
-  canvas.toBlob(blob=>{
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="chemistry-quiz-winner.png";
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  },"image/png");
+ const c=document.createElement("canvas"),ctx=c.getContext("2d");
+ c.width=1200;c.height=700;
+ const g=ctx.createLinearGradient(0,0,1200,700);g.addColorStop(0,"#090b1a");g.addColorStop(.5,"#151a38");g.addColorStop(1,"#241047");
+ ctx.fillStyle=g;ctx.fillRect(0,0,c.width,c.height);
+ ctx.fillStyle="#fff";ctx.textAlign="center";
+ ctx.font="bold 62px Arial";ctx.fillText("Trigonometric Ratios Quiz",600,150);
+ ctx.font="bold 110px Arial";ctx.fillText(`${score} / ${quiz.length}`,600,330);
+ ctx.font="bold 42px Arial";ctx.fillText(`${Math.round(score/quiz.length*100)}%`,600,420);
+ ctx.font="30px Arial";ctx.fillStyle="#c9cce0";ctx.fillText("sin • cos • tan • cot • sec • cosec",600,500);
+ ctx.font="24px Arial";ctx.fillText(new Date().toLocaleDateString(),600,590);
+ const a=document.createElement("a");a.download="trigonometric-quiz-result.png";a.href=c.toDataURL("image/png");a.click();
 }
-
-function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-document.getElementById("startBtn").addEventListener("click",beginQuiz);
-document.getElementById("restart").addEventListener("click",reset);
-document.getElementById("playAgain").addEventListener("click",reset);
-document.getElementById("download").addEventListener("click",downloadResult);
-window.addEventListener("resize",()=>{
-  arrangeButtons();
-});
-reset();
+start();
 </script>
 </body>
 </html>
