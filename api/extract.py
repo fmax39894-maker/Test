@@ -1,6 +1,7 @@
 import json
 import ipaddress
 import socket
+import re
 from urllib.parse import urljoin, urlparse
 from http.server import BaseHTTPRequestHandler
 
@@ -9,7 +10,7 @@ from bs4 import BeautifulSoup
 
 TIMEOUT = 12
 MAX_PAGE_BYTES = 2_500_000
-MAX_IMAGES = 80
+MAX_IMAGES = 200
 USER_AGENT = "Mozilla/5.0 (compatible; ImageExtractorPro/1.0)"
 
 def is_public_url(url):
@@ -83,7 +84,7 @@ def extract_images(url):
         found.append({"url": candidate, "source": source})
 
     # Social sharing / preview images first.
-    meta_keys = ("og:image", "og:image:url", "twitter:image", "twitter:image:src")
+    meta_keys = ("og:image", "og:image:url", "og:image:secure_url", "twitter:image", "twitter:image:src", "twitter:player:image")
     for key in meta_keys:
         for tag in soup.find_all("meta"):
             prop = (tag.get("property") or tag.get("name") or "").lower()
@@ -118,6 +119,34 @@ def extract_images(url):
         rel = " ".join(tag.get("rel", [])).lower()
         if "image_src" in rel:
             add(tag.get("href"), "image_src")
+
+
+    # Direct image links and image preloads.
+    for tag in soup.find_all("a", href=True):
+        href = tag.get("href", "").split("?")[0].lower()
+        if href.endswith((".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".bmp", ".svg")):
+            add(tag.get("href"), "linked image")
+
+    for tag in soup.find_all("link"):
+        rel = " ".join(tag.get("rel", [])).lower()
+        if "preload" in rel and tag.get("as") == "image":
+            add(tag.get("href"), "image preload")
+
+    # Inline CSS background images.
+    for tag in soup.find_all(style=True):
+        style = tag.get("style", "")
+        for match in re.findall(r"url\\(\\s*['\"]?([^)'\" ]+)", style, re.I):
+            add(match, "CSS background")
+
+    # Some search/share pages embed image URLs in script JSON. Scripts are never executed.
+    raw_html = body.decode("utf-8", errors="ignore")
+    raw_html = raw_html.replace(r"\\/", "/").replace(r"\\u0026", "&")
+    for match in re.findall(r"https?://[^\\s<>]+", raw_html):
+        candidate = match.rstrip("),;]")
+        if re.search(r"\\.(?:jpe?g|png|gif|webp|avif|bmp)(?:[?#]|$)", candidate, re.I):
+            add(candidate, "embedded image URL")
+        if len(found) >= MAX_IMAGES:
+            break
 
     return found[:MAX_IMAGES]
 
