@@ -15,8 +15,11 @@ h1{font-size:clamp(28px,5vw,44px);line-height:1.05;letter-spacing:-.04em;margin:
 .panel{border:1px solid #2a3653;background:#111a2d;border-radius:22px;padding:clamp(16px,3vw,26px);box-shadow:0 20px 70px #0003}
 label{font-size:14px;font-weight:700;display:block;margin:0 0 9px}
 .formrow{display:flex;gap:10px;align-items:stretch}
-input{flex:1;min-width:0;border:1px solid #3a496a;border-radius:13px;background:#0b1222;color:#f5f7ff;padding:15px 16px;font-size:16px;outline:none}
-input:focus{border-color:#818cf8;box-shadow:0 0 0 3px #6366f133}
+input,textarea{flex:1;min-width:0;border:1px solid #3a496a;border-radius:13px;background:#0b1222;color:#f5f7ff;padding:15px 16px;font-size:16px;outline:none}
+textarea{resize:vertical;line-height:1.5}
+input:focus,textarea:focus{border-color:#818cf8;box-shadow:0 0 0 3px #6366f133}
+.checkrow{display:flex;align-items:center;gap:9px;margin:14px 0 0;font-size:14px;color:#d5def2;font-weight:600}
+.checkrow input{flex:0 0 auto;width:18px;height:18px;accent-color:#7c3aed}
 button{border:0;border-radius:13px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;font-weight:750;padding:14px 18px;font-size:15px;cursor:pointer;white-space:nowrap}
 button:disabled{opacity:.55;cursor:wait}
 .hint{font-size:13px;color:#98a8c8;line-height:1.5;margin:12px 0 0}
@@ -44,12 +47,13 @@ footer{font-size:12px;color:#7f8eac;line-height:1.6;margin-top:26px}
 </header>
 
 <section class="panel">
-<label for="pageUrl">Paste a webpage URL or direct image URL</label>
+<label for="pageUrls">Paste multiple webpage or direct image URLs (one per line)</label>
 <div class="formrow">
-<input id="pageUrl" type="url" placeholder="https://example.com/gallery" autocomplete="url" inputmode="url">
+<textarea id="pageUrls" rows="5" placeholder="https://example.com/gallery-1&#10;https://example.com/gallery-2&#10;https://example.com/photo.jpg" autocomplete="off"></textarea>
 <button id="extractBtn">Extract images ↗</button>
 </div>
-<p class="hint">Scans common image sources: Open Graph previews, Twitter cards, image tags, srcset, and direct image links. No account or API key required.</p>
+<label class="checkrow"><input id="skipFirst" type="checkbox"> Skip the first image found on each page (often the thumbnail)</label>
+<p class="hint">Paste several links at once, one URL per line. The thumbnail option skips only the first extracted image from each webpage; direct image URLs are kept unless they are the first result for that input.</p>
 <div id="status" class="status" role="status" aria-live="polite"></div>
 </section>
 
@@ -66,7 +70,8 @@ Some websites block automated requests, require sign-in, or load images with Jav
 </footer>
 </main>
 <script>
-const input=document.querySelector('#pageUrl');
+const input=document.querySelector('#pageUrls');
+const skipFirst=document.querySelector('#skipFirst');
 const extractBtn=document.querySelector('#extractBtn');
 const statusEl=document.querySelector('#status');
 const results=document.querySelector('#results');
@@ -94,27 +99,48 @@ function makeCard(item,index){
   actions.append(open,copy);meta.append(tags,url,actions);card.append(thumb,meta);return card;
 }
 async function extract(){
-  const url=input.value.trim();
-  if(!validHttpUrl(url)){statusEl.textContent='Enter a valid public http:// or https:// URL.';input.focus();return}
-  extractBtn.disabled=true;extractBtn.textContent='Extracting…';statusEl.textContent='Fetching the page and checking image links…';
+  const raw=input.value.trim();
+  const urls=[...new Set(raw.split(/\s+/).map(s=>s.trim()).filter(Boolean))];
+  if(!urls.length || urls.some(url=>!validHttpUrl(url))){
+    statusEl.textContent='Paste one or more valid public http:// or https:// URLs, one per line.';
+    input.focus();return;
+  }
+  extractBtn.disabled=true;extractBtn.textContent='Extracting…';
+  statusEl.textContent=`Processing ${urls.length} link${urls.length===1?'':'s'}…`;
   results.replaceChildren();currentUrls=[];copyAll.hidden=true;count.textContent='Working…';
+  let failed=0;
   try{
-    const res=await fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.error||'Extraction failed.');
-    currentUrls=(data.images||[]).map(x=>x.url);
-    if(!currentUrls.length){statusEl.textContent='No image links were found. The site may block extraction or load images dynamically.';count.textContent='No results';results.innerHTML='<div class="empty">Try a different public webpage or paste a direct image URL.</div>';return}
-    (data.images||[]).forEach((item,i)=>results.append(makeCard(item,i)));
-    statusEl.textContent='Done. Choose an image and copy its direct URL.';
-    count.textContent=`${data.images.length} image${data.images.length===1?'':'s'} found`;
+    for(let i=0;i<urls.length;i++){
+      statusEl.textContent=`Processing link ${i+1} of ${urls.length}…`;
+      try{
+        const res=await fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:urls[i]})});
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error||'Failed');
+        let images=data.images||[];
+        if(skipFirst.checked && images.length) images=images.slice(1);
+        images.forEach(item=>{
+          if(!currentUrls.includes(item.url)){
+            currentUrls.push(item.url);
+            results.append(makeCard(item,currentUrls.length-1));
+          }
+        });
+      }catch(e){failed++;}
+    }
+    if(!currentUrls.length){
+      statusEl.textContent=failed?'No images found; some pages may block extraction.':'No images found after applying the thumbnail option.';
+      count.textContent='No results';
+      results.innerHTML='<div class="empty">Try other public links, or turn off the thumbnail option.</div>';
+      return;
+    }
+    statusEl.textContent=failed?`Finished with ${failed} link(s) unavailable. Copy the results below.`:'All links processed. Copy the results below.';
+    count.textContent=`${currentUrls.length} unique image${currentUrls.length===1?'':'s'} found`;
     copyAll.hidden=false;
-  }catch(err){
-    statusEl.textContent=err.message||'Could not extract images. Try another URL.';
-    count.textContent='No results';results.innerHTML='<div class="empty">The page could not be read. It may block automated requests.</div>';
-  }finally{extractBtn.disabled=false;extractBtn.textContent='Extract images ↗'}
+  }finally{
+    extractBtn.disabled=false;extractBtn.textContent='Extract images ↗';
+  }
 }
 extractBtn.addEventListener('click',extract);
-input.addEventListener('keydown',e=>{if(e.key==='Enter')extract()});
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();extract()}});
 copyAll.addEventListener('click',async()=>{
   // Copy lines ready to paste inside the IMAGE_LINKS list in api/webhook.py.
   const formatted=currentUrls.map(url=>'  "'+url.replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'",').join('\n');
