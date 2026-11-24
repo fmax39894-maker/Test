@@ -59,6 +59,8 @@ footer{font-size:12px;color:#7f8eac;line-height:1.6;margin-top:26px}
 
 <div class="toolbar">
 <div class="count" id="count">Your results will appear here</div>
+<button id="findDuplicates" class="smallbtn" hidden>Find visual duplicates</button>
+<button id="removeDuplicates" class="smallbtn" hidden>Keep one of each</button>
 <button id="copyAll" class="smallbtn" hidden>Copy all for GitHub</button>
 </div>
 <section id="results" class="grid" aria-live="polite">
@@ -77,7 +79,10 @@ const statusEl=document.querySelector('#status');
 const results=document.querySelector('#results');
 const count=document.querySelector('#count');
 const copyAll=document.querySelector('#copyAll');
+const findDuplicates=document.querySelector('#findDuplicates');
+const removeDuplicates=document.querySelector('#removeDuplicates');
 let currentUrls=[];
+let visualDuplicateIndexes=[];
 
 function validHttpUrl(value){
   try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)&&!!u.hostname}catch{return false}
@@ -107,7 +112,7 @@ async function extract(){
   }
   extractBtn.disabled=true;extractBtn.textContent='Extracting…';
   statusEl.textContent=`Processing ${urls.length} link${urls.length===1?'':'s'}…`;
-  results.replaceChildren();currentUrls=[];copyAll.hidden=true;count.textContent='Working…';
+  results.replaceChildren();currentUrls=[];visualDuplicateIndexes=[];copyAll.hidden=true;findDuplicates.hidden=true;removeDuplicates.hidden=true;count.textContent='Working…';
   let failed=0;
   try{
     for(let i=0;i<urls.length;i++){
@@ -134,11 +139,76 @@ async function extract(){
     }
     statusEl.textContent=failed?`Finished with ${failed} link(s) unavailable. Copy the results below.`:'All links processed. Copy the results below.';
     count.textContent=`${currentUrls.length} unique image${currentUrls.length===1?'':'s'} found`;
-    copyAll.hidden=false;
+    copyAll.hidden=false;findDuplicates.hidden=false;
   }finally{
     extractBtn.disabled=false;extractBtn.textContent='Extract images ↗';
   }
 }
+
+// Build a compact perceptual hash from image pixels. This needs image-host CORS
+// permission; URLs that block canvas access are skipped rather than guessed.
+function imageHash(url){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=()=>{
+      try{
+        const canvas=document.createElement('canvas');canvas.width=8;canvas.height=8;
+        const ctx=canvas.getContext('2d',{willReadFrequently:true});
+        ctx.drawImage(img,0,0,8,8);
+        const pixels=ctx.getImageData(0,0,8,8).data;
+        const gray=[];
+        for(let i=0;i<pixels.length;i+=4)gray.push((pixels[i]*299+pixels[i+1]*587+pixels[i+2]*114)/1000);
+        const avg=gray.reduce((a,b)=>a+b,0)/gray.length;
+        resolve(gray.map(v=>v>=avg?1:0).join(''));
+      }catch{resolve(null)}
+    };
+    img.onerror=()=>resolve(null);
+    img.src=url;
+  });
+}
+function hashDistance(a,b){
+  let d=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i])d++;return d;
+}
+findDuplicates.addEventListener('click',async()=>{
+  findDuplicates.disabled=true;findDuplicates.textContent='Checking…';
+  statusEl.textContent='Comparing image previews. Some hosts block visual comparison.';
+  const cards=[...results.querySelectorAll('.card')];
+  const hashes=await Promise.all(currentUrls.map(url=>imageHash(url)));
+  const kept=[], duplicates=[];
+  hashes.forEach((hash,index)=>{
+    if(!hash)return;
+    const match=kept.find(k=>hashDistance(hash,k.hash)<=5);
+    if(match)duplicates.push({index,original:match.index});
+    else kept.push({hash,index});
+  });
+  visualDuplicateIndexes=duplicates.map(x=>x.index);
+  cards.forEach((card,i)=>{
+    const old=card.querySelector('.visual-tag');if(old)old.remove();
+    const dup=duplicates.find(x=>x.index===i);
+    if(dup){
+      const tag=document.createElement('span');tag.className='tag visual-tag';
+      tag.textContent='Looks like image #'+(dup.original+1);
+      card.querySelector('.tags').append(tag);
+    }
+  });
+  removeDuplicates.hidden=!duplicates.length;
+  const skipped=hashes.filter(x=>!x).length;
+  statusEl.textContent=duplicates.length
+    ?`${duplicates.length} likely visual duplicate(s) found. Review the labels, then choose “Keep one of each”.${skipped?` ${skipped} image(s) could not be compared because of source restrictions.`:''}`
+    :`No visual duplicates detected.${skipped?` ${skipped} image(s) could not be compared because of source restrictions.`:''}`;
+  findDuplicates.disabled=false;findDuplicates.textContent='Find visual duplicates';
+});
+removeDuplicates.addEventListener('click',()=>{
+  const remove=new Set(visualDuplicateIndexes);
+  currentUrls=currentUrls.filter((_,i)=>!remove.has(i));
+  const cards=[...results.querySelectorAll('.card')];
+  cards.forEach((card,i)=>{if(remove.has(i))card.remove();});
+  count.textContent=`${currentUrls.length} image${currentUrls.length===1?'':'s'} remaining`;
+  statusEl.textContent='Visual duplicates removed; one image from each detected group was kept.';
+  visualDuplicateIndexes=[];removeDuplicates.hidden=true;
+});
+
 extractBtn.addEventListener('click',extract);
 input.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();extract()}});
 copyAll.addEventListener('click',async()=>{
