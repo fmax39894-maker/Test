@@ -1,691 +1,121 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Trigonometric Ratios Quiz</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Image Extractor Pro</title>
 <style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:Inter,Arial,sans-serif;
-  background:linear-gradient(135deg,#090b1a,#151a38,#241047);
-  color:#fff;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px
-}
-
-.app{
-  width:min(760px,100%);
-  background:rgba(255,255,255,.09);
-  backdrop-filter:blur(18px);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:24px;
-  padding:28px;
-  box-shadow:0 20px 60px #0008
-}
-
-h1{
-  text-align:center;
-  margin:0 0 8px;
-  font-size:clamp(28px,6vw,44px)
-}
-
-.sub{
-  text-align:center;
-  color:#c9cce0;
-  margin-bottom:25px
-}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:18px;
-  color:#d9dcf0;
-  font-weight:700
-}
-
-.progress{
-  height:9px;
-  background:#ffffff1c;
-  border-radius:99px;
-  overflow:hidden;
-  margin-bottom:25px
-}
-
-.bar{
-  height:100%;
-  width:0;
-  background:linear-gradient(90deg,#ff3cac,#784ba0,#2b86c5);
-  transition:.3s
-}
-
-.question{
-  font-size:clamp(24px,5vw,34px);
-  text-align:center;
-  margin:30px 0;
-  font-weight:800
-}
-
-.options{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px
-}
-
-.option{
-  min-height:80px;
-  border:1px solid #ffffff2b;
-  border-radius:17px;
-  background:#ffffff0d;
-  color:#fff;
-  font-size:clamp(22px,4vw,30px);
-  cursor:pointer;
-  transition:.2s
-}
-
-.option:hover{
-  transform:translateY(-2px);
-  background:#ffffff18
-}
-
-.option:disabled{
-  cursor:default
-}
-
-.option.correct{
-  background:#1f9d5b66;
-  border-color:#54e39a
-}
-
-.option.wrong{
-  background:#c9365666;
-  border-color:#ff8299
-}
-
-.next{
-  width:100%;
-  margin-top:22px;
-  padding:16px;
-  border:0;
-  border-radius:14px;
-  background:linear-gradient(90deg,#ff3cac,#784ba0);
-  color:white;
-  font-size:18px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.next:disabled{
-  opacity:.45;
-  cursor:not-allowed
-}
-
-.result{
-  text-align:center
-}
-
-.score{
-  font-size:64px;
-  font-weight:900;
-  margin:20px
-}
-
-.badge{
-  font-size:20px;
-  color:#d7d9e8
-}
-
-.actions{
-  display:flex;
-  gap:12px;
-  justify-content:center;
-  margin-top:25px;
-  flex-wrap:wrap
-}
-
-.actions button{
-  padding:13px 18px;
-  border:0;
-  border-radius:12px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.download{
-  background:#fff;
-  color:#111
-}
-
-.restart{
-  background:#ff3cac;
-  color:#fff
-}
-
-.math{
-  font-family:"Times New Roman",serif;
-  font-style:italic
-}
-
-@media(max-width:560px){
-  .options{
-    grid-template-columns:1fr
-  }
-
-  .app{
-    padding:20px
-  }
-
-  .question{
-    margin:22px 0
-  }
-}
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#eaf0ff;background:#0b1020;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 15% 0%,#1c2b55 0,transparent 38%),#0b1020}
+main{max-width:1080px;margin:auto;padding:28px 18px 64px}
+.top{display:flex;align-items:center;gap:12px;margin:6px 0 28px}.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#7c3aed,#2563eb);font-size:23px}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.05;letter-spacing:-.04em;margin:0}
+.sub{color:#a8b4d1;margin:8px 0 0;line-height:1.55}
+.panel{border:1px solid #2a3653;background:#111a2d;border-radius:22px;padding:clamp(16px,3vw,26px);box-shadow:0 20px 70px #0003}
+label{font-size:14px;font-weight:700;display:block;margin:0 0 9px}
+.formrow{display:flex;gap:10px;align-items:stretch}
+input{flex:1;min-width:0;border:1px solid #3a496a;border-radius:13px;background:#0b1222;color:#f5f7ff;padding:15px 16px;font-size:16px;outline:none}
+input:focus{border-color:#818cf8;box-shadow:0 0 0 3px #6366f133}
+button{border:0;border-radius:13px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;font-weight:750;padding:14px 18px;font-size:15px;cursor:pointer;white-space:nowrap}
+button:disabled{opacity:.55;cursor:wait}
+.hint{font-size:13px;color:#98a8c8;line-height:1.5;margin:12px 0 0}
+.status{min-height:24px;margin:16px 0 0;color:#c6d2ee;font-size:14px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:24px 0 12px}
+.count{font-weight:750}.smallbtn{padding:9px 12px;border:1px solid #354363;background:#17223a;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,245px),1fr));gap:15px}
+.card{min-width:0;border:1px solid #263451;background:#111a2d;border-radius:17px;overflow:hidden}
+.thumb{height:205px;background:#080d18;display:grid;place-items:center;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:contain}
+.meta{padding:13px}.url{font-size:12px;color:#a8b4d1;line-height:1.45;overflow-wrap:anywhere;margin:0 0 12px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tag{font-size:11px;border:1px solid #354363;color:#c8d4ef;border-radius:99px;padding:3px 7px}
+.actions{display:flex;gap:7px;flex-wrap:wrap}.actions button,.actions a{font-size:12px;padding:9px 10px;border-radius:9px;text-decoration:none}
+.actions a{background:#1d2c4b;color:#dbeafe;font-weight:700}
+.empty{border:1px dashed #354363;border-radius:16px;padding:28px;text-align:center;color:#9eacc8;grid-column:1/-1}
+footer{font-size:12px;color:#7f8eac;line-height:1.6;margin-top:26px}
+@media(max-width:620px){.formrow{flex-direction:column}.formrow button{width:100%}.thumb{height:185px}}
 </style>
 </head>
-
 <body>
+<main>
+<header class="top">
+<div class="logo" aria-hidden="true">✦</div>
+<div><h1>Image Extractor Pro</h1><p class="sub">Find image links hidden inside public webpages.</p></div>
+</header>
 
-<div class="app" id="app"></div>
+<section class="panel">
+<label for="pageUrl">Paste a webpage URL or direct image URL</label>
+<div class="formrow">
+<input id="pageUrl" type="url" placeholder="https://example.com/gallery" autocomplete="url" inputmode="url">
+<button id="extractBtn">Extract images ↗</button>
+</div>
+<p class="hint">Scans common image sources: Open Graph previews, Twitter cards, image tags, srcset, and direct image links. No account or API key required.</p>
+<div id="status" class="status" role="status" aria-live="polite"></div>
+</section>
 
+<div class="toolbar">
+<div class="count" id="count">Your results will appear here</div>
+<button id="copyAll" class="smallbtn" hidden>Copy all image URLs</button>
+</div>
+<section id="results" class="grid" aria-live="polite">
+<div class="empty">Paste a public page URL above to begin.</div>
+</section>
+
+<footer>
+Some websites block automated requests, require sign-in, or load images with JavaScript; those pages may not expose images to this tool. Use images you own or have permission to download or share. This tool does not bypass access controls.
+</footer>
+</main>
 <script>
+const input=document.querySelector('#pageUrl');
+const extractBtn=document.querySelector('#extractBtn');
+const statusEl=document.querySelector('#status');
+const results=document.querySelector('#results');
+const count=document.querySelector('#count');
+const copyAll=document.querySelector('#copyAll');
+let currentUrls=[];
 
-const questions=[
-
-["sin 0°",["0","1/2","1/√2","1"],0],
-["sin 30°",["1/2","√3/2","1/√2","1"],0],
-["sin 45°",["1/2","√3/2","1/√2","1"],2],
-["sin 60°",["1/2","√3/2","1/√2","1"],1],
-["sin 90°",["0","1/√2","√3/2","1"],3],
-
-["cos 0°",["0","1/2","√3/2","1"],3],
-["cos 30°",["1/2","√3/2","1/√2","1"],1],
-["cos 45°",["1/2","√3/2","1/√2","1"],2],
-["cos 60°",["√3/2","1/2","1/√2","0"],1],
-["cos 90°",["0","1/2","1/√2","1"],0],
-
-["tan 0°",["0","1","1/√3","√3"],0],
-["tan 30°",["√3","1","1/√3","0"],2],
-["tan 45°",["0","1/√3","1","√3"],2],
-["tan 60°",["1/√3","1","√3","0"],2],
-["tan 90°",["0","1","√3","Undefined"],3],
-
-["cot 0°",["0","1","√3","Undefined"],3],
-["cot 30°",["1/√3","1","√3","0"],2],
-["cot 45°",["0","1/√3","1","√3"],2],
-["cot 60°",["√3","1/√3","1","0"],1],
-["cot 90°",["0","1","√3","Undefined"],0],
-
-["sec 0°",["0","1","2","Undefined"],1],
-["sec 30°",["2","2/√3","√3","1"],1],
-["sec 45°",["1","√2","2","√3"],1],
-["sec 60°",["2","1/2","2/√3","1"],0],
-["sec 90°",["0","1","√2","Undefined"],3],
-
-["cosec 0°",["0","1","√2","Undefined"],3],
-["cosec 30°",["1/2","2","2/√3","1"],1],
-["cosec 45°",["1","√2","2","√3"],1],
-["cosec 60°",["2","2/√3","√3","1"],1],
-["cosec 90°",["0","1","√2","Undefined"],1]
-
-];
-
-let quiz=[];
-let current=0;
-let score=0;
-let selected=false;
-let mode=10;
-let answers=[];
-
-
-function shuffle(a){
-  return [...a].sort(()=>Math.random()-.5);
+function validHttpUrl(value){
+  try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)&&!!u.hostname}catch{return false}
 }
-
-
-function chooseMode(n){
-
-  mode=n;
-
-  quiz=shuffle(questions)
-    .slice(0,n)
-    .map(q=>{
-
-      const opts=shuffle(
-        q[1].map((v,i)=>({v,i}))
-      );
-
-      return{
-        q:q[0],
-        opts,
-        correct:opts.findIndex(x=>x.i===q[2])
-      };
-
-    });
-
-  current=0;
-  score=0;
-  answers=[];
-
-  render();
+function makeCard(item,index){
+  const card=document.createElement('article');card.className='card';
+  const thumb=document.createElement('div');thumb.className='thumb';
+  const img=document.createElement('img');img.loading='lazy';img.alt='Extracted image '+(index+1);img.src=item.url;
+  img.onerror=()=>{thumb.innerHTML='';const msg=document.createElement('span');msg.textContent='Preview blocked by source';msg.style.cssText='color:#9aa8c3;font-size:13px';thumb.append(msg)};
+  thumb.append(img);
+  const meta=document.createElement('div');meta.className='meta';
+  const tags=document.createElement('div');tags.className='tags';
+  const tag=document.createElement('span');tag.className='tag';tag.textContent=item.source||'image';tags.append(tag);
+  const url=document.createElement('p');url.className='url';url.textContent=item.url;
+  const actions=document.createElement('div');actions.className='actions';
+  const open=document.createElement('a');open.href=item.url;open.target='_blank';open.rel='noopener noreferrer';open.textContent='Open image';
+  const copy=document.createElement('button');copy.className='smallbtn';copy.textContent='Copy URL';
+  copy.onclick=async()=>{try{await navigator.clipboard.writeText(item.url);copy.textContent='Copied ✓';setTimeout(()=>copy.textContent='Copy URL',1300)}catch{url.textContent='Select and copy: '+item.url}};
+  actions.append(open,copy);meta.append(tags,url,actions);card.append(thumb,meta);return card;
 }
-
-
-function home(){
-
-  document.getElementById("app").innerHTML=`
-
-    <h1>Trigonometric Ratios Quiz</h1>
-
-    <div class="sub">
-      30 standard values • sin • cos • tan • cot • sec • cosec
-    </div>
-
-    <div style="
-      text-align:center;
-      margin:30px 0 15px;
-      font-size:21px;
-      font-weight:800
-    ">
-      Choose Quiz Mode
-    </div>
-
-    <div class="actions"
-         style="
-           flex-direction:column;
-           max-width:420px;
-           margin:0 auto
-         ">
-
-      <button class="next"
-              onclick="chooseMode(10)">
-        10 Questions
-      </button>
-
-      <button class="next"
-              onclick="chooseMode(30)">
-        All 30 Questions
-      </button>
-
-    </div>
-  `;
+async function extract(){
+  const url=input.value.trim();
+  if(!validHttpUrl(url)){statusEl.textContent='Enter a valid public http:// or https:// URL.';input.focus();return}
+  extractBtn.disabled=true;extractBtn.textContent='Extracting…';statusEl.textContent='Fetching the page and checking image links…';
+  results.replaceChildren();currentUrls=[];copyAll.hidden=true;count.textContent='Working…';
+  try{
+    const res=await fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Extraction failed.');
+    currentUrls=(data.images||[]).map(x=>x.url);
+    if(!currentUrls.length){statusEl.textContent='No image links were found. The site may block extraction or load images dynamically.';count.textContent='No results';results.innerHTML='<div class="empty">Try a different public webpage or paste a direct image URL.</div>';return}
+    (data.images||[]).forEach((item,i)=>results.append(makeCard(item,i)));
+    statusEl.textContent='Done. Choose an image and copy its direct URL.';
+    count.textContent=`${data.images.length} image${data.images.length===1?'':'s'} found`;
+    copyAll.hidden=false;
+  }catch(err){
+    statusEl.textContent=err.message||'Could not extract images. Try another URL.';
+    count.textContent='No results';results.innerHTML='<div class="empty">The page could not be read. It may block automated requests.</div>';
+  }finally{extractBtn.disabled=false;extractBtn.textContent='Extract images ↗'}
 }
-
-
-function render(){
-
-  const q=quiz[current];
-
-  document.getElementById("app").innerHTML=`
-
-    <h1>Trigonometric Ratios Quiz</h1>
-
-    <div class="sub">
-      ${mode===10
-        ?"10 Questions Mode"
-        :"All 30 Questions Mode"}
-    </div>
-
-    <div class="top">
-
-      <span>
-        Question ${current+1} / ${quiz.length}
-      </span>
-
-      <span>
-        Score: ${score}
-      </span>
-
-    </div>
-
-    <div class="progress">
-
-      <div
-        class="bar"
-        style="width:${current/quiz.length*100}%">
-      </div>
-
-    </div>
-
-    <div class="question">
-
-      <span class="math">
-        ${q.q}
-      </span>
-
-      = ?
-
-    </div>
-
-    <div class="options">
-
-      ${q.opts.map((o,i)=>`
-
-        <button
-          class="option math"
-          onclick="choose(${i})">
-
-          ${o.v}
-
-        </button>
-
-      `).join("")}
-
-    </div>
-
-    <button
-      class="next"
-      id="next"
-      disabled
-      onclick="next()">
-
-      Next →
-
-    </button>
-
-  `;
-
-  selected=false;
-}
-
-
-function choose(i){
-
-  if(selected)return;
-
-  selected=true;
-
-  const q=quiz[current];
-
-  const buttons=document.querySelectorAll(".option");
-
-  buttons.forEach((b,n)=>{
-
-    b.disabled=true;
-
-    if(n===q.correct){
-      b.classList.add("correct");
-    }
-
-  });
-
-  if(i!==q.correct){
-
-    buttons[i].classList.add("wrong");
-
-  }else{
-
-    score++;
-
-  }
-
-  document.getElementById("next").disabled=false;
-}
-
-
-function next(){
-
-  current++;
-
-  if(current<quiz.length){
-
-    render();
-
-  }else{
-
-    result();
-
-  }
-
-}
-
-
-function result(){
-
-  const pct=Math.round(
-    score/quiz.length*100
-  );
-
-  document.getElementById("app").innerHTML=`
-
-    <div class="result">
-
-      <h1>Quiz Complete!</h1>
-
-      <div class="sub">
-        ${mode===10
-          ?"10 Questions Mode"
-          :"All 30 Questions Mode"}
-      </div>
-
-      <div class="score">
-        ${score}/${quiz.length}
-      </div>
-
-      <div class="badge">
-
-        ${pct}% •
-        ${
-          pct>=90
-            ?"Excellent!"
-            :pct>=70
-              ?"Great work!"
-              :pct>=50
-                ?"Keep practicing!"
-                :"Practice makes progress!"
-        }
-
-      </div>
-
-      <div class="actions">
-
-        <button
-          class="download"
-          onclick="downloadResult()">
-
-          ⬇ Download Result Image
-
-        </button>
-
-        <button
-          class="restart"
-          onclick="chooseMode(mode)">
-
-          ↻ Try Again
-
-        </button>
-
-        <button
-          class="restart"
-          onclick="home()">
-
-          ⌂ Quiz Modes
-
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-}
-
-
-/* =====================================================
-   FIXED DOWNLOAD FUNCTION
-   File will be downloaded as:
-   result.png
-   ===================================================== */
-
-function downloadResult(){
-
-  const c=document.createElement("canvas");
-
-  const ctx=c.getContext("2d");
-
-  c.width=1200;
-  c.height=700;
-
-
-  /* Background */
-
-  const g=ctx.createLinearGradient(
-    0,0,1200,700
-  );
-
-  g.addColorStop(0,"#090b1a");
-  g.addColorStop(.5,"#151a38");
-  g.addColorStop(1,"#241047");
-
-  ctx.fillStyle=g;
-
-  ctx.fillRect(
-    0,
-    0,
-    c.width,
-    c.height
-  );
-
-
-  /* Text */
-
-  ctx.fillStyle="#fff";
-
-  ctx.textAlign="center";
-
-
-  ctx.font="bold 62px Arial";
-
-  ctx.fillText(
-    "Trigonometric Ratios Quiz",
-    600,
-    150
-  );
-
-
-  ctx.font="bold 44px Arial";
-
-  ctx.fillText(
-    mode===10
-      ?"10 Questions Mode"
-      :"All 30 Questions Mode",
-    600,
-    220
-  );
-
-
-  ctx.font="bold 110px Arial";
-
-  ctx.fillText(
-    `${score} / ${quiz.length}`,
-    600,
-    360
-  );
-
-
-  ctx.font="bold 42px Arial";
-
-  ctx.fillText(
-    `${Math.round(score/quiz.length*100)}%`,
-    600,
-    440
-  );
-
-
-  ctx.font="30px Arial";
-
-  ctx.fillStyle="#c9cce0";
-
-  ctx.fillText(
-    "sin • cos • tan • cot • sec • cosec",
-    600,
-    525
-  );
-
-
-  ctx.font="24px Arial";
-
-  ctx.fillText(
-    new Date().toLocaleDateString(),
-    600,
-    600
-  );
-
-
-  /*
-     IMPORTANT:
-     Convert canvas to Blob instead of using
-     canvas.toDataURL().
-
-     This prevents browsers/webviews from
-     naming the downloaded file "base64.png".
-  */
-
-  c.toBlob(function(blob){
-
-    if(!blob){
-
-      alert("Unable to create result image.");
-
-      return;
-
-    }
-
-
-    /*
-       Create a temporary Blob URL
-    */
-
-    const url=URL.createObjectURL(blob);
-
-
-    /*
-       Create download link
-    */
-
-    const a=document.createElement("a");
-
-    a.href=url;
-
-    a.download="result.png";
-
-    a.style.display="none";
-
-    document.body.appendChild(a);
-
-
-    /*
-       Trigger download
-    */
-
-    a.click();
-
-
-    /*
-       Remove temporary element
-    */
-
-    setTimeout(()=>{
-
-      document.body.removeChild(a);
-
-      URL.revokeObjectURL(url);
-
-    },1000);
-
-  },"image/png");
-
-}
-
-
-home();
-
+extractBtn.addEventListener('click',extract);
+input.addEventListener('keydown',e=>{if(e.key==='Enter')extract()});
+copyAll.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(currentUrls.join('\\n'));copyAll.textContent='Copied ✓';setTimeout(()=>copyAll.textContent='Copy all image URLs',1300)}catch{statusEl.textContent='Clipboard access unavailable. Copy URLs individually.'}});
 </script>
-
 </body>
 </html>
