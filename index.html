@@ -55,7 +55,7 @@ footer{font-size:12px;color:#7f8eac;line-height:1.6;margin-top:26px}
 
 <div class="toolbar">
 <div class="count" id="count">Your results will appear here</div>
-<button id="copyAll" class="smallbtn" hidden>Copy all image URLs</button>
+<button id="copyAll" class="smallbtn" hidden>Copy all for GitHub</button>
 </div>
 <section id="results" class="grid" aria-live="polite">
 <div class="empty">Paste a public page URL above to begin.</div>
@@ -115,7 +115,22 @@ async function extract(){
 }
 extractBtn.addEventListener('click',extract);
 input.addEventListener('keydown',e=>{if(e.key==='Enter')extract()});
-copyAll.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(currentUrls.join('\\n'));copyAll.textContent='Copied ✓';setTimeout(()=>copyAll.textContent='Copy all image URLs',1300)}catch{statusEl.textContent='Clipboard access unavailable. Copy URLs individually.'}});
+copyAll.addEventListener('click',async()=>{
+  // Copy lines ready to paste inside the IMAGE_LINKS list in api/webhook.py.
+  const formatted=currentUrls.map(url=>'  "'+url.replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'",').join('\n');
+  try{
+    await navigator.clipboard.writeText(formatted);
+    copyAll.textContent='Copied for GitHub ✓';
+    setTimeout(()=>copyAll.textContent='Copy all for GitHub',1500);
+  }catch{
+    const box=document.createElement('textarea');
+    box.value=formatted;box.setAttribute('readonly','');
+    box.style.cssText='position:fixed;left:-9999px;top:0';
+    document.body.appendChild(box);box.select();
+    const ok=document.execCommand('copy');box.remove();
+    statusEl.textContent=ok?'Formatted links copied.':'Clipboard unavailable; copy individual URLs instead.';
+  }
+});
 </script>
 </body>
 </html>
